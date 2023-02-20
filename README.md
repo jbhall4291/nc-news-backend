@@ -2,7 +2,7 @@
 
 ## Setup
 
-You will need to create two .env files for your project:
+You will need to create the following two .env files in the main project folder:
 
 .env.test
 .env.development
