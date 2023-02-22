@@ -140,7 +140,6 @@ describe("app.js", () => {
         });
     });
 
-
     test("Status 200: articles array should be sorted by date in descending order", () => {
       return request(app)
         .get("/api/articles")
@@ -153,14 +152,100 @@ describe("app.js", () => {
     });
   });
 
-  describe("app.js error handling", () => {
-    test("Status 404: returns an error if path doesn't exist", () => {
+  describe("/api/articles/:article_id", () => {
+    test("Status 200: returns a single article object on a key of 'article'", () => {
       return request(app)
-        .get("/api/topicsbanana")
-        .expect(404)
+        .get("/api/articles/1")
+        .expect(200)
         .then((response) => {
-          expect(response.body.msg).toBe("Invalid Endpoint");
+          expect(typeof response.body.article).toBe("object");
+          expect(Array.isArray(response.body.article)).toBe(false);
+          expect(Object.keys(response.body).length).toBe(1);
         });
     });
+
+    test("Status 200: returns a single article object with expected properties", () => {
+      return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then((response) => {
+          const article = response.body.article;
+          expect(article).toHaveProperty("author");
+          expect(article).toHaveProperty("title");
+          expect(article).toHaveProperty("article_id");
+          expect(article).toHaveProperty("body");
+          expect(article).toHaveProperty("topic");
+          expect(article).toHaveProperty("created_at");
+          expect(article).toHaveProperty("votes");
+          expect(article).toHaveProperty("article_img_url");
+        });
+    });
+
+    test("Status 200: returns article_id 1 with expected values", () => {
+      return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then((response) => {
+          const article = response.body.article;
+          expect(article.author).toBe("butter_bridge");
+          expect(article.title).toBe("Living in the shadow of a great man");
+          expect(article.article_id).toBe(1);
+          expect(article.body).toBe("I find this existence challenging");
+          expect(article.topic).toBe("mitch");
+          expect(article.created_at).toBe("2020-07-09T20:11:00.000Z");
+          expect(article.votes).toBe(100);
+          expect(article.article_img_url).toBe(
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+          );
+        });
+    });
+
+    test("Status 200: returns article_id 3 with expected values", () => {
+      return request(app)
+        .get("/api/articles/3")
+        .expect(200)
+        .then((response) => {
+          const article = response.body.article;
+          expect(article.author).toBe("icellusedkars");
+          expect(article.title).toBe("Eight pug gifs that remind me of mitch");
+          expect(article.article_id).toBe(3);
+          expect(article.body).toBe("some gifs");
+          expect(article.topic).toBe("mitch");
+          expect(article.created_at).toBe("2020-11-03T09:12:00.000Z");
+          expect(article.votes).toBe(0);
+          expect(article.article_img_url).toBe(
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+          );
+        });
+    });
+  });
+});
+
+describe("app.js error handling", () => {
+  test("Status 404: returns an error if path doesn't exist", () => {
+    return request(app)
+      .get("/api/topicsbanana")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("invalid endpoint");
+      });
+  });
+
+  test("Status 400: returns a message with a value of 'bad request: article_id is not a number' if article_id is not a number", () => {
+    return request(app)
+      .get("/api/articles/banana")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("bad request: article_id is not a number");
+      });
+  });
+
+  test("Status 404: returns a message with a value of 'article_id not found' if article_id doesn't exist", () => {
+    return request(app)
+      .get("/api/articles/10000")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("article_id not found");
+      });
   });
 });
