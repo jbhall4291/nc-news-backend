@@ -5,9 +5,11 @@ const {
 const { selectArticleComments } = require("../models/commentsModels.js");
 
 exports.getAllArticles = (request, response, next) => {
-  selectAllArticles().then((results) => {
-    response.status(200).send({ allArticles: results.rows });
-  });
+  selectAllArticles()
+    .then((results) => {
+      response.status(200).send({ allArticles: results.rows });
+    })
+    .catch(next);
 };
 
 exports.getArticle = (request, response, next) => {
@@ -24,8 +26,7 @@ exports.getArticleComments = (request, response, next) => {
   const { article_id } = request.params;
   selectArticleComments(article_id)
     .then((results) => {
-      //console.log(result)
-      response.status(200).send({ comments : results });
+      response.status(200).send({ comments: results });
     })
     .catch(next);
 };
