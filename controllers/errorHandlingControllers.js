@@ -1,8 +1,10 @@
-exports.handleCustomErrors = (error, request, response, next) => {
-  if (error === "article_id not found") {
-    response.status(404).send({ msg: "article_id not found" });
-  } else if (error === "article_id is not a number") {
-    response.status(400).send({ msg: "bad request: article_id is not a number" });
+exports.handle400Statuses = (error, request, response, next) => {
+  if (error.status === 400) {
+    response.status(400).send({ msg: error.msg });
+  }
+
+  if (error.status === 404) {
+    response.status(404).send({ msg: error.msg });
   } else {
     next(error);
   }

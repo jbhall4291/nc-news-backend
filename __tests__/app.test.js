@@ -219,33 +219,111 @@ describe("app.js", () => {
         });
     });
   });
-});
 
-describe("app.js error handling", () => {
-  test("Status 404: returns an error if path doesn't exist", () => {
-    return request(app)
-      .get("/api/topicsbanana")
-      .expect(404)
-      .then((response) => {
-        expect(response.body.msg).toBe("invalid endpoint");
-      });
+  describe("/api/articles/:article_id/comments", () => {
+    test("Status 200 - returns back an object with a property of 'comments' which is an array", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then((response) => {
+          expect(response.body).toBeInstanceOf(Object);
+          expect(response.body).toHaveProperty("comments");
+          expect(Array.isArray(response.body.comments)).toBe(true);
+        });
+    });
+
+    test("Status 200 - each comment has expected properties", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then((response) => {
+          response.body.comments.forEach((comment) => {
+            expect(comment).toHaveProperty("comment_id");
+            expect(comment).toHaveProperty("votes");
+            expect(comment).toHaveProperty("created_at");
+            expect(comment).toHaveProperty("author");
+            expect(comment).toHaveProperty("body");
+            expect(comment).toHaveProperty("article_id");
+          });
+        });
+    });
+
+    test("Status 200 - 'comments' property has the correct number of comments for article_id 1", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.comments.length).toBe(11);
+        });
+    });
+
+    test("Status 200 - 'comments' property has the correct number of comments for article_id 3", () => {
+      return request(app)
+        .get("/api/articles/3/comments")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.comments.length).toBe(2);
+        });
+    });
+
+    test("Status 200 - comments array should be sorted by date in descending order i.e. most recent first", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.comments).toBeSortedBy("created_at", {
+            descending: true,
+          });
+        });
+    });
   });
 
-  test("Status 400: returns a message with a value of 'bad request: article_id is not a number' if article_id is not a number", () => {
-    return request(app)
-      .get("/api/articles/banana")
-      .expect(400)
-      .then((response) => {
-        expect(response.body.msg).toBe("bad request: article_id is not a number");
-      });
-  });
+  describe("app.js error handling", () => {
+    test("Status 404: returns an error if path doesn't exist", () => {
+      return request(app)
+        .get("/api/topicsbanana")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("invalid endpoint");
+        });
+    });
 
-  test("Status 404: returns a message with a value of 'article_id not found' if article_id doesn't exist", () => {
-    return request(app)
-      .get("/api/articles/10000")
-      .expect(404)
-      .then((response) => {
-        expect(response.body.msg).toBe("article_id not found");
-      });
+    test("Status 400: returns a message with a value of 'article_id is not a number' if article_id is not a number", () => {
+      return request(app)
+        .get("/api/articles/banana")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("article_id is not a number");
+        });
+    });
+
+    test("Status 404: returns a message 'article_id not found' if article_id doesn't exist", () => {
+      return request(app)
+        .get("/api/articles/10000")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("article_id not found");
+        });
+    });
+
+    test("Status 404 - returns a message with 'specified article_id has no comments' for article_id 2", () => {
+      return request(app)
+        .get("/api/articles/2/comments")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe(
+            "specified article_id has no comments"
+          );
+        });
+    });
+
+    test("Status 404: returns a message 'article_id not found' if article_id doesn't exist", () => {
+      return request(app)
+        .get("/api/articles/banana/comments")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("article_id not found");
+        });
+    });
   });
 });
