@@ -13,14 +13,12 @@ exports.selectAllArticles = () => {
 exports.selectArticleById = (article_id) => {
   
   if (isNaN(article_id) === true) {
-    
     return Promise.reject("article_id is not a number");
   }
 
   const selectArticleByIdQueryString = `SELECT * FROM articles WHERE article_id = $1;`;
 
   return db.query(selectArticleByIdQueryString, [article_id]).then((result) => {
-    
     if (result.rowCount === 0) {
       return Promise.reject("article_id not found");
     } else {
