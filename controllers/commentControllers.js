@@ -22,14 +22,12 @@ exports.postArticleComment = (request, response, next) => {
   const { article_id } = request.params;
   const commentToInsert = request.body;
 
-  // check the article exists in DB
-  selectArticleById(article_id)
-    .then(() => {
-      // invoke insertArticleComment from commentsModels which will validate and insert the comment
-      insertArticleComment(article_id, commentToInsert);
+  Promise.all([
+    selectArticleById(article_id),
+    insertArticleComment(article_id, commentToInsert),
+  ])
+    .then(([promise1Result, promise2Result]) => {
+      response.status(200).send({ comments: promise2Result });
     })
-    // .then((result) => {
-    //   response.status(201).send({ insertedComment: result });
-    // })
     .catch(next);
 };

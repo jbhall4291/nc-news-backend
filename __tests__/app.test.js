@@ -327,7 +327,7 @@ describe("app.js", () => {
     });
   });
 
-  describe.skip("POST requests on /api/articles/:article_id/comments", () => {
+  describe("POST requests on /api/articles/:article_id/comments", () => {
     test("Status 404: returns an error if post request made to a non-existent article_id", () => {
       return request(app)
         .post("/api/articles/999999/comments")
@@ -355,7 +355,7 @@ describe("app.js", () => {
     });
 
 
-    test.only("Status 400: returns an error if post request is missing username", () => {
+    test("Status 400: returns an error if post request is missing username", () => {
       return request(app)
         .post("/api/articles/1/comments")
         .send({ body: "A-ha! Guess who's back in the bigtime?" })
