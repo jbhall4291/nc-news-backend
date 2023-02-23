@@ -26,12 +26,13 @@ app.get("/api/articles/:article_id/comments", getArticleComments);
 
 app.post("/api/articles/:article_id/comments", postArticleComment)
 
+app.use((request, response, next) => {
+  response.status(404).send({ msg: "invalid endpoint" });
+});
+
 app.use(handle400Statuses);
 
 app.use(handle500Statuses);
 
-app.use((request, response, next) => {
-  response.status(404).send({ msg: "invalid endpoint" });
-});
 
 module.exports = app;

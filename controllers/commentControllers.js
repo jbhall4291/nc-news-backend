@@ -20,14 +20,21 @@ exports.getArticleComments = (request, response, next) => {
 
 exports.postArticleComment = (request, response, next) => {
   const { article_id } = request.params;
-  const commentToInsert = request.body;
+  const commentData = request.body;
 
-  Promise.all([
-    selectArticleById(article_id),
-    insertArticleComment(article_id, commentToInsert),
-  ])
-    .then(([promise1Result, promise2Result]) => {
-      response.status(200).send({ comments: promise2Result });
+  insertArticleComment(article_id, commentData)
+    .then((result) => {
+  
+
+      response.status(201).send({ commentInserted: result });
     })
+
+    // Promise.all([
+    //   selectArticleById(article_id),
+    //   insertArticleComment(article_id, commentData),
+    // ])
+    // .then(([promise1Result, promise2Result]) => {
+    //   response.status(201).send({ commentInserted: promise2Result });
+    // })
     .catch(next);
 };

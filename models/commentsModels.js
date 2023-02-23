@@ -23,50 +23,36 @@ exports.selectArticleComments = (article_id) => {
 };
 
 exports.insertArticleComment = (article_id, commentToInsert) => {
-  
-  
-  if (!commentToInsert.username) {
-    console.log("no username!!!!!!!!!!!!!!!!!!!!") 
-    return Promise.reject({
-      status: 400,
-      msg: "comment is missing username",
-    });
-  }
+  // if (!commentToInsert.username) {
+  //   return Promise.reject({
+  //     status: 400,
+  //     msg: "comment is missing username",
+  //   });
+  // }
 
-  if (!commentToInsert.body) {
-    return Promise.reject({
-      status: 400,
-      msg: "comment is missing body",
-    });
-  }
+  // if (!commentToInsert.body) {
+  //   return Promise.reject({
+  //     status: 400,
+  //     msg: "comment is missing body",
+  //   });
+  // }
 
-  return "all good here!";
+  const insertArticleCommentQueryString = `INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING *;`;
+
+  return db
+    .query(insertArticleCommentQueryString, [
+      commentToInsert.username,
+      commentToInsert.body,
+      article_id,
+    ])
+    .then((result) => {
+      if (result.rows.length === 0) {
+        return Promise.reject({
+          status: 400,
+          msg: "not found",
+        });
+      }
+
+      return result.rows[0];
+    });
 };
-
-/*
-// create a string like the below to INSERT
-//const insertArticleCommentQueryString = `INSERT INTO comments VALUES ;`;
-
-// return db.query(selectArticleByIdQueryString, [article_id]).then((result) => {
-//   if (result.rowCount === 0) {
-//     return Promise.reject({ status: 404, msg: "article_id not found" });
-//   }
-// })}
-
-//   else {
-//     const [article] = result.rows;
-//     return article;
-//   }
-// ));
-
-// 'INSERT INTO comments (body, author, article_id, votes, created_at) VALUES %L;',
-//       formattedCommentData.map(
-//         ({ body, author, article_id, votes = 0, created_at }) => [
-//           body,
-//           author,
-//           article_id,
-//           votes,
-//           created_at,
-//         ]
-//       )
-*/

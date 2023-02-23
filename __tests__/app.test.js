@@ -167,7 +167,7 @@ describe("app.js", () => {
         .get("/api/articles/1")
         .expect(200)
         .then((response) => {
-          console.log(response.body + "<<<<<<<<");
+          
           expect(typeof response.body.article).toBe("object");
           expect(Array.isArray(response.body.article)).toBe(false);
           expect(Object.keys(response.body).length).toBe(1);
@@ -328,6 +328,25 @@ describe("app.js", () => {
   });
 
   describe("POST requests on /api/articles/:article_id/comments", () => {
+    test.only("Status 201: returns the inserted comment", () => {
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send({
+          username: "icellusedkars",
+          body: "A-ha! Guess who's back in the big-time?",
+        })
+        .expect(201)
+        .then((response) => {
+          console.log(JSON.stringify(response.body) + "<<<<" )
+          expect(response.body.commentInserted).toHaveProperty("comment_id");
+          expect(response.body.commentInserted).toHaveProperty("body");
+          expect(response.body.commentInserted).toHaveProperty("article_id");
+          expect(response.body.commentInserted).toHaveProperty("author");
+          expect(response.body.commentInserted).toHaveProperty("votes");
+          expect(response.body.commentInserted).toHaveProperty("created_at");
+        });
+    });
+
     test("Status 404: returns an error if post request made to a non-existent article_id", () => {
       return request(app)
         .post("/api/articles/999999/comments")
@@ -354,14 +373,13 @@ describe("app.js", () => {
         });
     });
 
-
     test("Status 400: returns an error if post request is missing username", () => {
       return request(app)
         .post("/api/articles/1/comments")
         .send({ body: "A-ha! Guess who's back in the bigtime?" })
         .expect(400)
         .then((response) => {
-          console.log(response.body.msg + "<<<<") 
+          
           expect(response.body.msg).toBe("comment is missing username");
         });
     });
@@ -375,7 +393,5 @@ describe("app.js", () => {
           expect(response.body.msg).toBe("comment is missing body");
         });
     });
-
-   
   });
 });
