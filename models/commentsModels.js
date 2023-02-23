@@ -37,22 +37,40 @@ exports.insertArticleComment = (article_id, commentToInsert) => {
     });
   }
 
-  const insertArticleCommentQueryString = `INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING *;`;
+  // check username is in the users table
+  const selectUserQueryString = `SELECT * FROM users WHERE username = $1;`;
 
   return db
-    .query(insertArticleCommentQueryString, [
-      commentToInsert.username,
-      commentToInsert.body,
-      article_id,
-    ])
+    .query(selectUserQueryString, [commentToInsert.username])
     .then((result) => {
-      if (result.rows.length === 0) {
+      if (result.rowCount === 0) {
         return Promise.reject({
-          status: 400,
-          msg: "not found",
+          status: 404,
+          msg: "username does not exist",
         });
+      } else {
+        const user = result.rows;
+        return user;
       }
+    })
+    .then(() => {
+      const insertArticleCommentQueryString = `INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING *;`;
 
-      return result.rows[0];
+      return db
+        .query(insertArticleCommentQueryString, [
+          commentToInsert.username,
+          commentToInsert.body,
+          article_id,
+        ])
+        .then((result) => {
+          if (result.rows.length === 0) {
+            return Promise.reject({
+              status: 400,
+              msg: "not found",
+            });
+          }
+
+          return result.rows[0];
+        });
     });
 };

@@ -335,17 +335,12 @@ describe("app.js", () => {
         })
         .expect(201)
         .then((response) => {
-          expect(response.body.commentInserted).toHaveProperty("comment_id");
           expect(response.body.commentInserted.comment_id).toBe(19);
-          expect(response.body.commentInserted).toHaveProperty("body");
           expect(response.body.commentInserted.body).toBe(
             "A-ha! Guess who's back in the big-time?"
           );
-          expect(response.body.commentInserted).toHaveProperty("article_id");
           expect(response.body.commentInserted.article_id).toBe(3);
-          expect(response.body.commentInserted).toHaveProperty("author");
           expect(response.body.commentInserted.author).toBe("icellusedkars");
-          expect(response.body.commentInserted).toHaveProperty("votes");
           expect(response.body.commentInserted.votes).toBe(0);
           expect(response.body.commentInserted).toHaveProperty("created_at");
         });
@@ -355,7 +350,7 @@ describe("app.js", () => {
       return request(app)
         .post("/api/articles/999999/comments")
         .send({
-          username: "A. Partridge",
+          username: "icellusedkars",
           body: "A-ha! Guess who's back in the big-time?",
         })
         .expect(404)
@@ -368,7 +363,7 @@ describe("app.js", () => {
       return request(app)
         .post("/api/articles/banana/comments")
         .send({
-          username: "A. Partridge",
+          username: "icellusedkars",
           body: "A-ha! Guess who's back in the big-time?",
         })
         .expect(400)
@@ -390,10 +385,20 @@ describe("app.js", () => {
     test("Status 400: returns an error if post request is missing body", () => {
       return request(app)
         .post("/api/articles/1/comments")
-        .send({ username: "A. Partridge" })
+        .send({ username: "icellusedkars" })
         .expect(400)
         .then((response) => {
           expect(response.body.msg).toBe("comment is missing body");
+        });
+    });
+
+    test("Status 400: returns an error if post request is sent with a username not in the 'users' table", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({ username: "A. Partridge",  body: "A-ha! Guess who's back in the bigtime?"  })
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("username does not exist");
         });
     });
   });
