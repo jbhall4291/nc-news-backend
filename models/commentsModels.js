@@ -23,19 +23,19 @@ exports.selectArticleComments = (article_id) => {
 };
 
 exports.insertArticleComment = (article_id, commentToInsert) => {
-  // if (!commentToInsert.username) {
-  //   return Promise.reject({
-  //     status: 400,
-  //     msg: "comment is missing username",
-  //   });
-  // }
+  if (!commentToInsert.username) {
+    return Promise.reject({
+      status: 400,
+      msg: "comment is missing username",
+    });
+  }
 
-  // if (!commentToInsert.body) {
-  //   return Promise.reject({
-  //     status: 400,
-  //     msg: "comment is missing body",
-  //   });
-  // }
+  if (!commentToInsert.body) {
+    return Promise.reject({
+      status: 400,
+      msg: "comment is missing body",
+    });
+  }
 
   const insertArticleCommentQueryString = `INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING *;`;
 

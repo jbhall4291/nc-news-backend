@@ -167,7 +167,6 @@ describe("app.js", () => {
         .get("/api/articles/1")
         .expect(200)
         .then((response) => {
-          
           expect(typeof response.body.article).toBe("object");
           expect(Array.isArray(response.body.article)).toBe(false);
           expect(Object.keys(response.body).length).toBe(1);
@@ -254,7 +253,6 @@ describe("app.js", () => {
         .get("/api/articles/1/comments")
         .expect(200)
         .then((response) => {
-          console.table(response.body + "<<<<<<<<<<<<<<<<<<<<");
           expect(response.body).toBeInstanceOf(Object);
           expect(response.body).toHaveProperty("comments");
           expect(Array.isArray(response.body.comments)).toBe(true);
@@ -328,7 +326,7 @@ describe("app.js", () => {
   });
 
   describe("POST requests on /api/articles/:article_id/comments", () => {
-    test.only("Status 201: returns the inserted comment", () => {
+    test("Status 201: returns the inserted comment", () => {
       return request(app)
         .post("/api/articles/3/comments")
         .send({
@@ -337,12 +335,18 @@ describe("app.js", () => {
         })
         .expect(201)
         .then((response) => {
-          console.log(JSON.stringify(response.body) + "<<<<" )
           expect(response.body.commentInserted).toHaveProperty("comment_id");
+          expect(response.body.commentInserted.comment_id).toBe(19);
           expect(response.body.commentInserted).toHaveProperty("body");
+          expect(response.body.commentInserted.body).toBe(
+            "A-ha! Guess who's back in the big-time?"
+          );
           expect(response.body.commentInserted).toHaveProperty("article_id");
+          expect(response.body.commentInserted.article_id).toBe(3);
           expect(response.body.commentInserted).toHaveProperty("author");
+          expect(response.body.commentInserted.author).toBe("icellusedkars");
           expect(response.body.commentInserted).toHaveProperty("votes");
+          expect(response.body.commentInserted.votes).toBe(0);
           expect(response.body.commentInserted).toHaveProperty("created_at");
         });
     });
@@ -379,7 +383,6 @@ describe("app.js", () => {
         .send({ body: "A-ha! Guess who's back in the bigtime?" })
         .expect(400)
         .then((response) => {
-          
           expect(response.body.msg).toBe("comment is missing username");
         });
     });
