@@ -13,26 +13,23 @@ exports.getArticleComments = (request, response, next) => {
     selectArticleComments(article_id),
   ])
     .then(([promise1Result, promise2Result]) => {
-      
       response.status(200).send({ comments: promise2Result });
     })
     .catch(next);
 };
 
-/*
 exports.postArticleComment = (request, response, next) => {
   const { article_id } = request.params;
-  const comment = request.body;
+  const commentToInsert = request.body;
 
-  //check the article exists in DB
+  // check the article exists in DB
   selectArticleById(article_id)
     .then(() => {
-      console.log(
-        "select article by id has been succesfully invoked and promise fufilled"
-      );
-      //now invoke insertArticleComment from commentsModels which will check and insert the comment
+      // invoke insertArticleComment from commentsModels which will validate and insert the comment
+      insertArticleComment(article_id, commentToInsert);
     })
+    // .then((result) => {
+    //   response.status(201).send({ insertedComment: result });
+    // })
     .catch(next);
-    
 };
-*/

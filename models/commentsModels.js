@@ -22,25 +22,28 @@ exports.selectArticleComments = (article_id) => {
     });
 };
 
-/*
-exports.insertArticleComment = (article_id, comment) => {
-  if (!comment.username) {
+exports.insertArticleComment = (article_id, commentToInsert) => {
+  
+  
+  if (!commentToInsert.username) {
+    console.log("no username!!!!!!!!!!!!!!!!!!!!") 
     return Promise.reject({
       status: 400,
       msg: "comment is missing username",
     });
   }
 
-  if (!comment.body) {
+  if (!commentToInsert.body) {
     return Promise.reject({
       status: 400,
       msg: "comment is missing body",
     });
   }
 
-  return "all good here!"
+  return "all good here!";
 };
 
+/*
 // create a string like the below to INSERT
 //const insertArticleCommentQueryString = `INSERT INTO comments VALUES ;`;
 

@@ -341,12 +341,27 @@ describe("app.js", () => {
         });
     });
 
-    test("Status 400: returns an error if post request is missing username", () => {
+    test("Status 400: returns an error if post request made to an article_id which is not a number", () => {
+      return request(app)
+        .post("/api/articles/banana/comments")
+        .send({
+          username: "A. Partridge",
+          body: "A-ha! Guess who's back in the big-time?",
+        })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("article_id is not a number");
+        });
+    });
+
+
+    test.only("Status 400: returns an error if post request is missing username", () => {
       return request(app)
         .post("/api/articles/1/comments")
         .send({ body: "A-ha! Guess who's back in the bigtime?" })
         .expect(400)
         .then((response) => {
+          console.log(response.body.msg + "<<<<") 
           expect(response.body.msg).toBe("comment is missing username");
         });
     });
@@ -361,17 +376,6 @@ describe("app.js", () => {
         });
     });
 
-    test("Status 400: returns an error if post request made to an article_id which is not a number", () => {
-      return request(app)
-        .post("/api/articles/banana/comments")
-        .send({
-          username: "A. Partridge",
-          body: "A-ha! Guess who's back in the big-time?",
-        })
-        .expect(400)
-        .then((response) => {
-          expect(response.body.msg).toBe("article_id is not a number");
-        });
-    });
+   
   });
 });

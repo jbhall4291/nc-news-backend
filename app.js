@@ -24,7 +24,7 @@ app.get("/api/articles/:article_id", getArticle);
 
 app.get("/api/articles/:article_id/comments", getArticleComments);
 
-//app.post("/api/articles/:article_id/comments", postArticleComment)
+app.post("/api/articles/:article_id/comments", postArticleComment)
 
 app.use(handle400Statuses);
 
