@@ -159,23 +159,6 @@ describe("app.js", () => {
           });
         });
     });
-    test("Status 400: returns a message with a value of 'article_id is not a number' if article_id is not a number", () => {
-      return request(app)
-        .get("/api/articles/banana")
-        .expect(400)
-        .then((response) => {
-          expect(response.body.msg).toBe("article_id is not a number");
-        });
-    });
-
-    test("Status 404: returns a message 'article_id not found' if article_id doesn't exist", () => {
-      return request(app)
-        .get("/api/articles/10000")
-        .expect(404)
-        .then((response) => {
-          expect(response.body.msg).toBe("article_id not found");
-        });
-    });
   });
 
   describe("GET requests on /api/articles/:article_id", () => {
@@ -184,6 +167,7 @@ describe("app.js", () => {
         .get("/api/articles/1")
         .expect(200)
         .then((response) => {
+          console.log(response.body + "<<<<<<<<");
           expect(typeof response.body.article).toBe("object");
           expect(Array.isArray(response.body.article)).toBe(false);
           expect(Object.keys(response.body).length).toBe(1);
@@ -244,6 +228,24 @@ describe("app.js", () => {
           );
         });
     });
+
+    test("Status 400: returns a message with a value of 'article_id is not a number' if article_id is not a number", () => {
+      return request(app)
+        .get("/api/articles/banana")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("article_id is not a number");
+        });
+    });
+
+    test("Status 404: returns a message 'article_id not found' if article_id doesn't exist", () => {
+      return request(app)
+        .get("/api/articles/10000")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("article_id not found");
+        });
+    });
   });
 
   describe("GET requests on /api/articles/:article_id/comments", () => {
@@ -252,6 +254,7 @@ describe("app.js", () => {
         .get("/api/articles/1/comments")
         .expect(200)
         .then((response) => {
+          console.table(response.body + "<<<<<<<<<<<<<<<<<<<<");
           expect(response.body).toBeInstanceOf(Object);
           expect(response.body).toHaveProperty("comments");
           expect(Array.isArray(response.body.comments)).toBe(true);
@@ -302,9 +305,16 @@ describe("app.js", () => {
           });
         });
     });
-  });
 
-  describe("POST requests on /api/articles/:article_id/comments", () => {
+    test("Status 404: returns a message 'article_id not found' if article_id doesn't exist", () => {
+      return request(app)
+        .get("/api/articles/999999/comments")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("article_id not found");
+        });
+    });
+
     test("Status 404: returns a message with 'specified article_id has no comments' for article_id 2", () => {
       return request(app)
         .get("/api/articles/2/comments")
@@ -315,41 +325,10 @@ describe("app.js", () => {
           );
         });
     });
+  });
 
-    test.skip("Status 400: returns an error if post request is missing username", () => {
-      return request(app)
-        .post("/api/articles/1/comments")
-        .send({ body: "A-ha! Guess who's back in the bigtime?" })
-        .expect(400)
-        .then((response) => {
-          expect(response.body.msg).toBe("comment is missing username");
-        });
-    });
-
-    test.skip("Status 400: returns an error if post request is missing body", () => {
-      return request(app)
-        .post("/api/articles/1/comments")
-        .send({ username: "A. Partridge" })
-        .expect(400)
-        .then((response) => {
-          expect(response.body.msg).toBe("comment is missing body");
-        });
-    });
-
-    test.skip("Status 400: returns an error if post request made to an article_id which is not a number", () => {
-      return request(app)
-        .post("/api/articles/banana/comments")
-        .send({
-          username: "A. Partridge",
-          body: "A-ha! Guess who's back in the big-time?",
-        })
-        .expect(400)
-        .then((response) => {
-          expect(response.body.msg).toBe("article_id is not a number");
-        });
-    });
-
-    test.skip("Status 404: returns an error if post request made to a non-existent article_id", () => {
+  describe.skip("POST requests on /api/articles/:article_id/comments", () => {
+    test("Status 404: returns an error if post request made to a non-existent article_id", () => {
       return request(app)
         .post("/api/articles/999999/comments")
         .send({
@@ -359,6 +338,39 @@ describe("app.js", () => {
         .expect(404)
         .then((response) => {
           expect(response.body.msg).toBe("article_id not found");
+        });
+    });
+
+    test("Status 400: returns an error if post request is missing username", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({ body: "A-ha! Guess who's back in the bigtime?" })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("comment is missing username");
+        });
+    });
+
+    test("Status 400: returns an error if post request is missing body", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({ username: "A. Partridge" })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("comment is missing body");
+        });
+    });
+
+    test("Status 400: returns an error if post request made to an article_id which is not a number", () => {
+      return request(app)
+        .post("/api/articles/banana/comments")
+        .send({
+          username: "A. Partridge",
+          body: "A-ha! Guess who's back in the big-time?",
+        })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("article_id is not a number");
         });
     });
   });
