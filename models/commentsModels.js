@@ -1,5 +1,4 @@
 const db = require("../db/connection");
-const { selectArticleById } = require("./articlesModels");
 
 exports.selectArticleComments = (article_id) => {
   if (isNaN(article_id) === true) {

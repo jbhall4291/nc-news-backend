@@ -14,7 +14,7 @@ afterAll(() => {
 });
 
 describe("app.js", () => {
-  describe("/api/topics", () => {
+  describe("GET requests on /api/topics", () => {
     test("Status 200: responds with an object 'allTopics' with a value of an array", () => {
       return request(app)
         .get("/api/topics")
@@ -69,9 +69,18 @@ describe("app.js", () => {
           );
         });
     });
+
+    test("Status 404: returns an error if path doesn't exist", () => {
+      return request(app)
+        .get("/api/topicsbanana")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("invalid endpoint");
+        });
+    });
   });
 
-  describe("/api/articles", () => {
+  describe("GET requests on /api/articles", () => {
     test("Status 200: responds with an object 'allArticles' with a value of an array", () => {
       return request(app)
         .get("/api/articles")
@@ -150,9 +159,26 @@ describe("app.js", () => {
           });
         });
     });
+    test("Status 400: returns a message with a value of 'article_id is not a number' if article_id is not a number", () => {
+      return request(app)
+        .get("/api/articles/banana")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("article_id is not a number");
+        });
+    });
+
+    test("Status 404: returns a message 'article_id not found' if article_id doesn't exist", () => {
+      return request(app)
+        .get("/api/articles/10000")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("article_id not found");
+        });
+    });
   });
 
-  describe("/api/articles/:article_id", () => {
+  describe("GET requests on /api/articles/:article_id", () => {
     test("Status 200: returns a single article object on a key of 'article'", () => {
       return request(app)
         .get("/api/articles/1")
@@ -220,7 +246,7 @@ describe("app.js", () => {
     });
   });
 
-  describe("/api/articles/:article_id/comments", () => {
+  describe("GET requests on /api/articles/:article_id/comments", () => {
     test("Status 200: returns back an object with a property of comments which is an array", () => {
       return request(app)
         .get("/api/articles/1/comments")
@@ -278,34 +304,7 @@ describe("app.js", () => {
     });
   });
 
-  describe("app.js error handling", () => {
-    test("Status 404: returns an error if path doesn't exist", () => {
-      return request(app)
-        .get("/api/topicsbanana")
-        .expect(404)
-        .then((response) => {
-          expect(response.body.msg).toBe("invalid endpoint");
-        });
-    });
-
-    test("Status 400: returns a message with a value of 'article_id is not a number' if article_id is not a number", () => {
-      return request(app)
-        .get("/api/articles/banana")
-        .expect(400)
-        .then((response) => {
-          expect(response.body.msg).toBe("article_id is not a number");
-        });
-    });
-
-    test("Status 404: returns a message 'article_id not found' if article_id doesn't exist", () => {
-      return request(app)
-        .get("/api/articles/10000")
-        .expect(404)
-        .then((response) => {
-          expect(response.body.msg).toBe("article_id not found");
-        });
-    });
-
+  describe("POST requests on /api/articles/:article_id/comments", () => {
     test("Status 404: returns a message with 'specified article_id has no comments' for article_id 2", () => {
       return request(app)
         .get("/api/articles/2/comments")
@@ -317,7 +316,6 @@ describe("app.js", () => {
         });
     });
 
-   
     test.skip("Status 400: returns an error if post request is missing username", () => {
       return request(app)
         .post("/api/articles/1/comments")

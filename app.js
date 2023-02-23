@@ -4,15 +4,17 @@ const { getAllTopics } = require("./controllers/topicControllers.js");
 const {
   getAllArticles,
   getArticle,
-  getArticleComments,
-  postArticleComment
 } = require("./controllers/articleControllers.js");
+const {
+  getArticleComments,
+  postArticleComment,
+} = require("./controllers/commentControllers");
 const {
   handle400Statuses,
   handle500Statuses,
 } = require("./controllers/errorHandlingControllers.js");
 
-app.use(express.json())
+app.use(express.json());
 
 app.get("/api/topics", getAllTopics);
 
