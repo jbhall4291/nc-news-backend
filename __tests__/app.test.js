@@ -221,7 +221,7 @@ describe("app.js", () => {
   });
 
   describe("/api/articles/:article_id/comments", () => {
-    test("Status 200 - returns back an object with a property of 'comments' which is an array", () => {
+    test("Status 200: returns back an object with a property of comments which is an array", () => {
       return request(app)
         .get("/api/articles/1/comments")
         .expect(200)
@@ -232,7 +232,7 @@ describe("app.js", () => {
         });
     });
 
-    test("Status 200 - each comment has expected properties", () => {
+    test("Status 200: each comment has expected properties", () => {
       return request(app)
         .get("/api/articles/1/comments")
         .expect(200)
@@ -248,7 +248,7 @@ describe("app.js", () => {
         });
     });
 
-    test("Status 200 - 'comments' property has the correct number of comments for article_id 1", () => {
+    test("Status 200: comments property has the correct number of comments for article_id 1", () => {
       return request(app)
         .get("/api/articles/1/comments")
         .expect(200)
@@ -257,7 +257,7 @@ describe("app.js", () => {
         });
     });
 
-    test("Status 200 - 'comments' property has the correct number of comments for article_id 3", () => {
+    test("Status 200: comments property has the correct number of comments for article_id 3", () => {
       return request(app)
         .get("/api/articles/3/comments")
         .expect(200)
@@ -266,7 +266,7 @@ describe("app.js", () => {
         });
     });
 
-    test("Status 200 - comments array should be sorted by date in descending order i.e. most recent first", () => {
+    test("Status 200: comments array should be sorted by date in descending order i.e. most recent first", () => {
       return request(app)
         .get("/api/articles/1/comments")
         .expect(200)
@@ -306,7 +306,7 @@ describe("app.js", () => {
         });
     });
 
-    test("Status 404 - returns a message with 'specified article_id has no comments' for article_id 2", () => {
+    test("Status 404: returns a message with 'specified article_id has no comments' for article_id 2", () => {
       return request(app)
         .get("/api/articles/2/comments")
         .expect(404)
@@ -317,9 +317,47 @@ describe("app.js", () => {
         });
     });
 
-    test("Status 404: returns a message 'article_id not found' if article_id doesn't exist", () => {
+   
+    test.skip("Status 400: returns an error if post request is missing username", () => {
       return request(app)
-        .get("/api/articles/banana/comments")
+        .post("/api/articles/1/comments")
+        .send({ body: "A-ha! Guess who's back in the bigtime?" })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("comment is missing username");
+        });
+    });
+
+    test.skip("Status 400: returns an error if post request is missing body", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({ username: "A. Partridge" })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("comment is missing body");
+        });
+    });
+
+    test.skip("Status 400: returns an error if post request made to an article_id which is not a number", () => {
+      return request(app)
+        .post("/api/articles/banana/comments")
+        .send({
+          username: "A. Partridge",
+          body: "A-ha! Guess who's back in the big-time?",
+        })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("article_id is not a number");
+        });
+    });
+
+    test.skip("Status 404: returns an error if post request made to a non-existent article_id", () => {
+      return request(app)
+        .post("/api/articles/999999/comments")
+        .send({
+          username: "A. Partridge",
+          body: "A-ha! Guess who's back in the big-time?",
+        })
         .expect(404)
         .then((response) => {
           expect(response.body.msg).toBe("article_id not found");

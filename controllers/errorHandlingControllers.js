@@ -5,7 +5,9 @@ exports.handle400Statuses = (error, request, response, next) => {
 
   if (error.status === 404) {
     response.status(404).send({ msg: error.msg });
-  } else {
+  } 
+  
+  else {
     next(error);
   }
 };

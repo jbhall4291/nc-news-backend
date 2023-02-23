@@ -17,12 +17,16 @@ exports.selectArticleById = (article_id) => {
 
   const selectArticleByIdQueryString = `SELECT * FROM articles WHERE article_id = $1;`;
 
-  return db.query(selectArticleByIdQueryString, [article_id]).then((result) => {
-    if (result.rowCount === 0) {
-      return Promise.reject({ status: 404, msg: "article_id not found" });
-    } else {
-      const [article] = result.rows;
-      return article;
-    }
-  });
+  return db
+    .query(selectArticleByIdQueryString, [article_id])
+    .then((result) => {
+      if (result.rowCount === 0) {
+        return Promise.reject({ status: 404, msg: "article_id not found" });
+      } else {
+        const [article] = result.rows;
+        return article;
+      }
+    })
+    // the below line is causing an issue but may be needed?!
+    //.catch(next);
 };
