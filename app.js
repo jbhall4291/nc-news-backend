@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const { getAllTopics } = require("./controllers/topicControllers.js");
 const {
-  getAllArticles,
+  getArticles,
   getArticle,
   patchArticle,
 } = require("./controllers/articleControllers.js");
@@ -20,7 +20,7 @@ app.use(express.json());
 
 app.get("/api/topics", getAllTopics);
 
-app.get("/api/articles", getAllArticles);
+app.get("/api/articles", getArticles);
 
 app.get("/api/articles/:article_id", getArticle);
 

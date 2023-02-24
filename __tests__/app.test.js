@@ -152,6 +152,7 @@ describe("app.js", () => {
         .get("/api/articles")
         .expect(200)
         .then((response) => {
+          console.log(response.body.articles)
           expect(response.body.articles).toBeSortedBy("created_at", {
             descending: true,
           });
@@ -557,25 +558,27 @@ describe("app.js", () => {
     });
   });
 
-  describe.only("GET requests with queries on /api/articles", () => {
+  describe("GET requests with queries on /api/articles", () => {
     test("Status 200: return the single article with the topic 'cats'", () => {
       return request(app)
         .get("/api/articles?topic=cats")
         .expect(200)
         .then((response) => {
-          console.log(response.body.articles[0]);
           expect(response.body.articles).toHaveLength(1);
-          expect(response.body.articles[0]).toEqual({
-            article_id: 5,
-            title: "UNCOVERED: catspiracy to bring down democracy",
-            topic: "cats",
-            author: "rogersop",
-            body: "Bastet walks amongst us, and the cats are taking arms!",
-            created_at: "2020-08-03T13:14:00.000Z",
-            votes: 0,
-            article_img_url:
-              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-          });
+          expect(response.body.articles[0].author).toBe("rogersop");
+          expect(response.body.articles[0].title).toBe(
+            "UNCOVERED: catspiracy to bring down democracy"
+          );
+          expect(response.body.articles[0].article_id).toBe(5);
+          expect(response.body.articles[0].topic).toBe("cats");
+          expect(response.body.articles[0].created_at).toBe(
+            "2020-08-03T13:14:00.000Z"
+          );
+          expect(response.body.articles[0].votes).toBe(0);
+          expect(response.body.articles[0].article_img_url).toBe(
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+          );
+          expect(response.body.articles[0].comment_count).toBe("2");
         });
     });
 
@@ -584,9 +587,34 @@ describe("app.js", () => {
         .get("/api/articles?topic=mitch")
         .expect(200)
         .then((response) => {
-          console.log(response.body.articles[0]);
           expect(response.body.articles).toHaveLength(11);
         });
     });
+
+    test("Status 200: returns all 11 articles with the topic 'mitch' sorted by descending date", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
+        });
+    });
+
+    
+    test.skip("Status 200: returns all 11 articles with the topic 'mitch' sorted by ascending date", () => {
+      return request(app)
+        .get("/api/articles?order=ASC")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toBeSortedBy("created_at", {
+            descending: false,
+          });
+        });
+    });
+
+
+
   });
 });

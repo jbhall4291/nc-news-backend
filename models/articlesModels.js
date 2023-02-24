@@ -1,33 +1,50 @@
 const db = require("../db/connection");
 
 exports.selectArticles = (articleQuery, next) => {
+  const queryValues = [];
 
-console.log(articleQuery.length)
+  let selectArticlesQueryString = `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id`;
 
-if (articleQuery) {console.log("no queries, return all articles!")}
-//change querystring dynamically according to the passed query, if any
-  
-  
-  
-  const articlesWithTopic = articleQuery.topic;
-  const selectArticlesQueryString =
-  `SELECT * FROM articles WHERE topic = $1;`;
-  
-  /*
-  if (articleQuery.sort_by) {
-    const articlesSortedBy = articleQuery.sort_by;
+  if (articleQuery.topic) {
+    queryValues.push(articleQuery.topic);
+    selectArticlesQueryString += ` WHERE topic = $1`;
   }
 
+  /*
+  console.log(selectArticlesQueryString);
+  //sort_by
+  // if (articleQuery.sort_by) {
+  //   const articlesSortedBy = articleQuery.sort_by;
+  // }
+
+  
+  console.log(articleQuery.order + "<<<<<<<<<<");
+  */
+  selectArticlesQueryString +=
+    " GROUP BY articles.article_id ORDER BY articles.created_at";
+
+
+
+
+    console.log(articleQuery.order + "order specified")
+
+
+  //order
   if (articleQuery.order) {
-    const articlesInOrderOf = article.order;
+    queryValues.push(articleQuery.order);
+    selectArticlesQueryString += ` $1`;
+  } else {
+    // default to DESC
+    selectArticlesQueryString += ` DESC`;
   }
-*/
 
-  /*
-    "SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY articles.created_at DESC;";
-*/
+  selectArticlesQueryString += ";";
+// watch out for the length and positioning of the values in query string, as they will change depending on how many queries have been pushed !!!!!
+  console.log(queryValues)
+  console.log(selectArticlesQueryString)
+
   return db
-    .query(selectArticlesQueryString, [articlesWithTopic])
+    .query(selectArticlesQueryString, queryValues)
     .then((results) => {
       return results;
     })

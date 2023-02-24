@@ -4,7 +4,7 @@ const {
   updateArticle,
 } = require("../models/articlesModels.js");
 
-exports.getAllArticles = (request, response, next) => {
+exports.getArticles = (request, response, next) => {
   const articleQuery = request.query;
 
   
