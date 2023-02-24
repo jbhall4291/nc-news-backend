@@ -26,11 +26,6 @@ exports.patchArticle = (request, response, next) => {
   const { article_id } = request.params;
   const patchData = request.body;
 
-  //console.log(patchData)
-  /*
-  https://www.postgresqltutorial.com/postgresql-tutorial/postgresql-update/
-*/
-
   Promise.all([
     selectArticleById(article_id),
     updateArticle(article_id, patchData),
