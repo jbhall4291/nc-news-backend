@@ -395,10 +395,141 @@ describe("app.js", () => {
     test("Status 400: returns an error if post request is sent with a username not in the 'users' table", () => {
       return request(app)
         .post("/api/articles/1/comments")
-        .send({ username: "A. Partridge",  body: "A-ha! Guess who's back in the bigtime?"  })
+        .send({
+          username: "A. Partridge",
+          body: "A-ha! Guess who's back in the bigtime?",
+        })
         .expect(404)
         .then((response) => {
           expect(response.body.msg).toBe("username does not exist");
+        });
+    });
+  });
+
+  describe("PATCH requests on /api/articles/:article_id", () => {
+    test("Status 202: returns article_id=1 with votes value increased by 1 to a value of 101", () => {
+      const expectedResponse = {
+        updatedArticle: {
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 101,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        },
+      };
+
+      return request(app)
+        .patch("/api/articles/1")
+        .send({
+          inc_votes: 1,
+        })
+        .expect(202)
+        .then((response) => {
+          expect(response.body).toEqual(expectedResponse);
+        });
+    });
+
+    test("Status 202: returns article_id=1 with votes value decreased by 10 to a value of 90", () => {
+      const expectedResponse = {
+        updatedArticle: {
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 90,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        },
+      };
+
+      return request(app)
+        .patch("/api/articles/1")
+        .send({
+          inc_votes: -10,
+        })
+        .expect(202)
+        .then((response) => {
+          expect(response.body).toEqual(expectedResponse);
+        });
+    });
+
+    test("Status 202: returns article_id=3 with votes value increased by 7 to a value of 7", () => {
+      const expectedResponse = {
+        updatedArticle: {
+          article_id: 3,
+          title: "Eight pug gifs that remind me of mitch",
+          topic: "mitch",
+          author: "icellusedkars",
+          body: "some gifs",
+          created_at: "2020-11-03T09:12:00.000Z",
+          votes: 7,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        },
+      };
+
+      return request(app)
+        .patch("/api/articles/3")
+        .send({
+          inc_votes: 7,
+        })
+        .expect(202)
+        .then((response) => {
+          expect(response.body).toEqual(expectedResponse);
+        });
+    });
+
+    test("Status 400: returns message 'inc_votes value must be a number'", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({
+          inc_votes: "banana",
+        })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("inc_votes value must be a number");
+        });
+    });
+
+    test("Status 404: returns message 'article_id not found'", () => {
+      return request(app)
+        .patch("/api/articles/1000000")
+        .send({
+          inc_votes: 1,
+        })
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("article_id not found");
+        });
+    });
+
+    test("Status 400: returns message 'article_id is not a number'", () => {
+      return request(app)
+        .patch("/api/articles/banana")
+        .send({
+          inc_votes: 1,
+        })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("article_id is not a number");
+        });
+    });
+
+    test("Status 400: returns message 'inc_votes property missing'", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({
+          inc_bananas: 1,
+        })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("inc_votes property missing");
         });
     });
   });
