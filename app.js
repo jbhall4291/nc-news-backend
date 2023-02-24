@@ -4,6 +4,7 @@ const { getAllTopics } = require("./controllers/topicControllers.js");
 const {
   getAllArticles,
   getArticle,
+  patchArticle,
 } = require("./controllers/articleControllers.js");
 const {
   getArticleComments,
@@ -22,9 +23,11 @@ app.get("/api/articles", getAllArticles);
 
 app.get("/api/articles/:article_id", getArticle);
 
+app.patch("/api/articles/:article_id", patchArticle);
+
 app.get("/api/articles/:article_id/comments", getArticleComments);
 
-app.post("/api/articles/:article_id/comments", postArticleComment)
+app.post("/api/articles/:article_id/comments", postArticleComment);
 
 app.use((request, response, next) => {
   response.status(404).send({ msg: "invalid endpoint" });
@@ -33,6 +36,5 @@ app.use((request, response, next) => {
 app.use(handle400Statuses);
 
 app.use(handle500Statuses);
-
 
 module.exports = app;

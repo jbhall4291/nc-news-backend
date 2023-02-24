@@ -1,7 +1,7 @@
 const db = require("../db/connection");
 
 exports.selectArticleComments = (article_id) => {
-  if (isNaN(article_id) === true) {
+  if (isNaN(article_id)) {
     return Promise.reject({ status: 400, msg: "article_id is not a number" });
   }
 
