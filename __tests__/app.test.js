@@ -533,4 +533,16 @@ describe("app.js", () => {
         });
     });
   });
+
+  describe.only("GET requests with queries on /api/articles", () => {
+    test("Status 200: return something! ", () => {
+      return request(app)
+        .get("/api/articles?topic=cats")
+        .expect(200)
+        .then((response) => {
+          //console.log(response)
+          
+        });
+    });
+  });
 });
