@@ -1,10 +1,33 @@
 const db = require("../db/connection");
 
-exports.selectAllArticles = (next) => {
+exports.selectArticles = (articleQuery, next) => {
+
+console.log(articleQuery.length)
+
+if (articleQuery) {console.log("no queries, return all articles!")}
+//change querystring dynamically according to the passed query, if any
+  
+  
+  
+  const articlesWithTopic = articleQuery.topic;
+  const selectArticlesQueryString =
+  `SELECT * FROM articles WHERE topic = $1;`;
+  
+  /*
+  if (articleQuery.sort_by) {
+    const articlesSortedBy = articleQuery.sort_by;
+  }
+
+  if (articleQuery.order) {
+    const articlesInOrderOf = article.order;
+  }
+*/
+
+  /*
+    "SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY articles.created_at DESC;";
+*/
   return db
-    .query(
-      "SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY articles.created_at DESC;"
-    )
+    .query(selectArticlesQueryString, [articlesWithTopic])
     .then((results) => {
       return results;
     })
@@ -59,5 +82,4 @@ exports.updateArticle = (article_id, patchData, next) => {
       }
     })
     .catch(next);
-
 };

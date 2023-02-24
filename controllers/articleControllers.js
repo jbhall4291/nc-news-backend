@@ -1,16 +1,17 @@
 const {
-  selectAllArticles,
+  selectArticles,
   selectArticleById,
   updateArticle,
 } = require("../models/articlesModels.js");
 
 exports.getAllArticles = (request, response, next) => {
+  const articleQuery = request.query;
 
-console.log(request.query)
+  
 
-  selectAllArticles()
+  selectArticles(articleQuery)
     .then((results) => {
-      response.status(200).send({ allArticles: results.rows });
+      response.status(200).send({ articles: results.rows });
     })
     .catch(next);
 };

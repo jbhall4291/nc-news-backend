@@ -81,13 +81,13 @@ describe("app.js", () => {
   });
 
   describe("GET requests on /api/articles", () => {
-    test("Status 200: responds with an object 'allArticles' with a value of an array", () => {
+    test("Status 200: responds with an object 'articles' with a value of an array", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
         .then((response) => {
-          expect(response.body).toHaveProperty("allArticles");
-          expect(Array.isArray(response.body.allArticles)).toBe(true);
+          expect(response.body).toHaveProperty("articles");
+          expect(Array.isArray(response.body.articles)).toBe(true);
         });
     });
 
@@ -96,7 +96,7 @@ describe("app.js", () => {
         .get("/api/articles")
         .expect(200)
         .then((response) => {
-          expect(response.body.allArticles).toHaveLength(
+          expect(response.body.articles).toHaveLength(
             testData.articleData.length
           );
         });
@@ -107,15 +107,13 @@ describe("app.js", () => {
         .get("/api/articles")
         .expect(200)
         .then((response) => {
-          expect(response.body.allArticles[0]).toHaveProperty("author");
-          expect(response.body.allArticles[0]).toHaveProperty("title");
-          expect(response.body.allArticles[0]).toHaveProperty("article_id");
-          expect(response.body.allArticles[0]).toHaveProperty("topic");
-          expect(response.body.allArticles[0]).toHaveProperty("created_at");
-          expect(response.body.allArticles[0]).toHaveProperty("votes");
-          expect(response.body.allArticles[0]).toHaveProperty(
-            "article_img_url"
-          );
+          expect(response.body.articles[0]).toHaveProperty("author");
+          expect(response.body.articles[0]).toHaveProperty("title");
+          expect(response.body.articles[0]).toHaveProperty("article_id");
+          expect(response.body.articles[0]).toHaveProperty("topic");
+          expect(response.body.articles[0]).toHaveProperty("created_at");
+          expect(response.body.articles[0]).toHaveProperty("votes");
+          expect(response.body.articles[0]).toHaveProperty("article_img_url");
         });
     });
 
@@ -124,7 +122,7 @@ describe("app.js", () => {
         .get("/api/articles")
         .expect(200)
         .then((response) => {
-          response.body.allArticles.forEach((article) => {
+          response.body.articles.forEach((article) => {
             expect(article).toHaveProperty("author");
             expect(article).toHaveProperty("title");
             expect(article).toHaveProperty("article_id");
@@ -143,7 +141,7 @@ describe("app.js", () => {
         .get("/api/articles")
         .expect(200)
         .then((response) => {
-          response.body.allArticles.forEach((article) => {
+          response.body.articles.forEach((article) => {
             expect(article).toHaveProperty("comment_count");
           });
         });
@@ -154,7 +152,7 @@ describe("app.js", () => {
         .get("/api/articles")
         .expect(200)
         .then((response) => {
-          expect(response.body.allArticles).toBeSortedBy("created_at", {
+          expect(response.body.articles).toBeSortedBy("created_at", {
             descending: true,
           });
         });
@@ -534,18 +532,6 @@ describe("app.js", () => {
     });
   });
 
-  describe.only("GET requests with queries on /api/articles", () => {
-    test("Status 200: return something! ", () => {
-      return request(app)
-        .get("/api/articles?topic=cats")
-        .expect(200)
-        .then((response) => {
-          //console.log(response)
-          
-        });
-    });
-  });
-
   describe("GET requests on /api/users", () => {
     test("Status 200: responds with an object 'allUsers' which is an array of 4 user objects", () => {
       return request(app)
@@ -567,6 +553,39 @@ describe("app.js", () => {
             expect(user).toHaveProperty("name");
             expect(user).toHaveProperty("avatar_url");
           });
+        });
+    });
+  });
+
+  describe.only("GET requests with queries on /api/articles", () => {
+    test("Status 200: return the single article with the topic 'cats'", () => {
+      return request(app)
+        .get("/api/articles?topic=cats")
+        .expect(200)
+        .then((response) => {
+          console.log(response.body.articles[0]);
+          expect(response.body.articles).toHaveLength(1);
+          expect(response.body.articles[0]).toEqual({
+            article_id: 5,
+            title: "UNCOVERED: catspiracy to bring down democracy",
+            topic: "cats",
+            author: "rogersop",
+            body: "Bastet walks amongst us, and the cats are taking arms!",
+            created_at: "2020-08-03T13:14:00.000Z",
+            votes: 0,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          });
+        });
+    });
+
+    test("Status 200: returns all 11 articles with the topic 'mitch'", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then((response) => {
+          console.log(response.body.articles[0]);
+          expect(response.body.articles).toHaveLength(11);
         });
     });
   });
