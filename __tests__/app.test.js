@@ -533,4 +533,29 @@ describe("app.js", () => {
         });
     });
   });
+
+  describe("GET requests on /api/users", () => {
+    test("Status 200: responds with an object 'allUsers' which is an array of 4 user objects", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then((response) => {
+          expect(Array.isArray(response.body.allUsers)).toBe(true);
+          expect(response.body.allUsers).toHaveLength(4);
+        });
+    });
+
+    test("Status 200: each user object in allUsers has expected properties", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then((response) => {
+          response.body.allUsers.forEach((user) => {
+            expect(user).toHaveProperty("username");
+            expect(user).toHaveProperty("name");
+            expect(user).toHaveProperty("avatar_url");
+          });
+        });
+    });
+  });
 });
