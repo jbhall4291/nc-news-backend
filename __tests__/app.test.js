@@ -81,13 +81,13 @@ describe("app.js", () => {
   });
 
   describe("GET requests on /api/articles", () => {
-    test("Status 200: responds with an object 'allArticles' with a value of an array", () => {
+    test("Status 200: responds with an object 'articles' with a value of an array", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
         .then((response) => {
-          expect(response.body).toHaveProperty("allArticles");
-          expect(Array.isArray(response.body.allArticles)).toBe(true);
+          expect(response.body).toHaveProperty("articles");
+          expect(Array.isArray(response.body.articles)).toBe(true);
         });
     });
 
@@ -96,7 +96,7 @@ describe("app.js", () => {
         .get("/api/articles")
         .expect(200)
         .then((response) => {
-          expect(response.body.allArticles).toHaveLength(
+          expect(response.body.articles).toHaveLength(
             testData.articleData.length
           );
         });
@@ -107,15 +107,13 @@ describe("app.js", () => {
         .get("/api/articles")
         .expect(200)
         .then((response) => {
-          expect(response.body.allArticles[0]).toHaveProperty("author");
-          expect(response.body.allArticles[0]).toHaveProperty("title");
-          expect(response.body.allArticles[0]).toHaveProperty("article_id");
-          expect(response.body.allArticles[0]).toHaveProperty("topic");
-          expect(response.body.allArticles[0]).toHaveProperty("created_at");
-          expect(response.body.allArticles[0]).toHaveProperty("votes");
-          expect(response.body.allArticles[0]).toHaveProperty(
-            "article_img_url"
-          );
+          expect(response.body.articles[0]).toHaveProperty("author");
+          expect(response.body.articles[0]).toHaveProperty("title");
+          expect(response.body.articles[0]).toHaveProperty("article_id");
+          expect(response.body.articles[0]).toHaveProperty("topic");
+          expect(response.body.articles[0]).toHaveProperty("created_at");
+          expect(response.body.articles[0]).toHaveProperty("votes");
+          expect(response.body.articles[0]).toHaveProperty("article_img_url");
         });
     });
 
@@ -124,7 +122,7 @@ describe("app.js", () => {
         .get("/api/articles")
         .expect(200)
         .then((response) => {
-          response.body.allArticles.forEach((article) => {
+          response.body.articles.forEach((article) => {
             expect(article).toHaveProperty("author");
             expect(article).toHaveProperty("title");
             expect(article).toHaveProperty("article_id");
@@ -143,7 +141,7 @@ describe("app.js", () => {
         .get("/api/articles")
         .expect(200)
         .then((response) => {
-          response.body.allArticles.forEach((article) => {
+          response.body.articles.forEach((article) => {
             expect(article).toHaveProperty("comment_count");
           });
         });
@@ -154,7 +152,7 @@ describe("app.js", () => {
         .get("/api/articles")
         .expect(200)
         .then((response) => {
-          expect(response.body.allArticles).toBeSortedBy("created_at", {
+          expect(response.body.articles).toBeSortedBy("created_at", {
             descending: true,
           });
         });
@@ -555,6 +553,92 @@ describe("app.js", () => {
             expect(user).toHaveProperty("name");
             expect(user).toHaveProperty("avatar_url");
           });
+        });
+    });
+  });
+
+  describe("GET requests with queries on /api/articles", () => {
+    test("Status 200: return the single article that has the topic 'cats'", () => {
+      return request(app)
+        .get("/api/articles?topic=cats")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toHaveLength(1);
+          expect(response.body.articles[0].author).toBe("rogersop");
+          expect(response.body.articles[0].title).toBe(
+            "UNCOVERED: catspiracy to bring down democracy"
+          );
+          expect(response.body.articles[0].article_id).toBe(5);
+          expect(response.body.articles[0].topic).toBe("cats");
+          expect(response.body.articles[0].created_at).toBe(
+            "2020-08-03T13:14:00.000Z"
+          );
+          expect(response.body.articles[0].votes).toBe(0);
+          expect(response.body.articles[0].article_img_url).toBe(
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+          );
+          expect(response.body.articles[0].comment_count).toBe("2");
+        });
+    });
+
+    test("Status 200: returns all 11 articles with the topic 'mitch', sorted by descending date by default", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toHaveLength(11);
+          expect(response.body.articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
+        });
+    });
+
+    test("Status 200: returns articles with the topic 'mitch', specifically sorted by descending date", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch&order=DESC")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
+        });
+    });
+
+    test("Status 200: returns articles with the topic 'mitch', specifically sorted by ascending date", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch&order=ASC")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toBeSortedBy("created_at", {
+            descending: false,
+          });
+        });
+    });
+
+    test("Status 400: responds with message 'invalid order query'", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch&order=bananas")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("invalid order query");
+        });
+    });
+
+    test("Status 400: responds with message 'invalid sort query'", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch&order=ASC&sort_by=bananas")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("invalid sort query");
+        });
+    });
+
+    test("Status 404: returns message 'no articles found' if non-existent topic queried", () => {
+      return request(app)
+        .get("/api/articles?topic=bananas")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("no articles found");
         });
     });
   });
