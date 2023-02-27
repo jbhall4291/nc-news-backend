@@ -5,11 +5,9 @@ const {
 } = require("../models/articlesModels.js");
 
 exports.getArticles = (request, response, next) => {
-  const articleQuery = request.query;
+  const {topic, sort_by, order} = request.query;
 
-  
-
-  selectArticles(articleQuery)
+  selectArticles(topic, sort_by, order)
     .then((results) => {
       response.status(200).send({ articles: results.rows });
     })

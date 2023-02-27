@@ -152,7 +152,6 @@ describe("app.js", () => {
         .get("/api/articles")
         .expect(200)
         .then((response) => {
-          console.log(response.body.articles)
           expect(response.body.articles).toBeSortedBy("created_at", {
             descending: true,
           });
@@ -559,7 +558,7 @@ describe("app.js", () => {
   });
 
   describe("GET requests with queries on /api/articles", () => {
-    test("Status 200: return the single article with the topic 'cats'", () => {
+    test("Status 200: return the single article that has the topic 'cats'", () => {
       return request(app)
         .get("/api/articles?topic=cats")
         .expect(200)
@@ -582,18 +581,21 @@ describe("app.js", () => {
         });
     });
 
-    test("Status 200: returns all 11 articles with the topic 'mitch'", () => {
+    test("Status 200: returns all 11 articles with the topic 'mitch', sorted by descending date by default", () => {
       return request(app)
         .get("/api/articles?topic=mitch")
         .expect(200)
         .then((response) => {
           expect(response.body.articles).toHaveLength(11);
+          expect(response.body.articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
         });
     });
 
-    test("Status 200: returns all 11 articles with the topic 'mitch' sorted by descending date", () => {
+    test("Status 200: returns articles with the topic 'mitch', specifically sorted by descending date", () => {
       return request(app)
-        .get("/api/articles?topic=mitch")
+        .get("/api/articles?topic=mitch&order=DESC")
         .expect(200)
         .then((response) => {
           expect(response.body.articles).toBeSortedBy("created_at", {
@@ -602,10 +604,9 @@ describe("app.js", () => {
         });
     });
 
-    
-    test.skip("Status 200: returns all 11 articles with the topic 'mitch' sorted by ascending date", () => {
+    test("Status 200: returns articles with the topic 'mitch', specifically sorted by ascending date", () => {
       return request(app)
-        .get("/api/articles?order=ASC")
+        .get("/api/articles?topic=mitch&order=ASC")
         .expect(200)
         .then((response) => {
           expect(response.body.articles).toBeSortedBy("created_at", {
@@ -614,7 +615,31 @@ describe("app.js", () => {
         });
     });
 
+    test("Status 400: responds with message 'invalid order query'", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch&order=bananas")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("invalid order query");
+        });
+    });
 
+    test("Status 400: responds with message 'invalid sort query'", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch&order=ASC&sort_by=bananas")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("invalid sort query");
+        });
+    });
 
+    test("Status 404: returns message 'no articles found' if non-existent topic queried", () => {
+      return request(app)
+        .get("/api/articles?topic=bananas")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("no articles found");
+        });
+    });
   });
 });

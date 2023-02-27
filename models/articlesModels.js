@@ -1,51 +1,52 @@
 const db = require("../db/connection");
 
-exports.selectArticles = (articleQuery, next) => {
-  const queryValues = [];
-
-  let selectArticlesQueryString = `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id`;
-
-  if (articleQuery.topic) {
-    queryValues.push(articleQuery.topic);
-    selectArticlesQueryString += ` WHERE topic = $1`;
+exports.selectArticles = (topic, sort_by, order, next) => {
+  // default sortOption to 'created_at' if no sort_by given
+  const sortOption = sort_by ? sort_by : "created_at";
+  // check if sortOption matches one of the below possible columns, if not return 400 error
+  const validSortOptions = [
+    "article_id",
+    "title",
+    "topic",
+    "author",
+    "body",
+    "created_at",
+    "votes",
+    "article_img_url",
+  ];
+  if (!validSortOptions.includes(sortOption)) {
+    return Promise.reject({ status: 400, msg: "invalid sort query" });
   }
 
-  /*
-  console.log(selectArticlesQueryString);
-  //sort_by
-  // if (articleQuery.sort_by) {
-  //   const articlesSortedBy = articleQuery.sort_by;
-  // }
-
-  
-  console.log(articleQuery.order + "<<<<<<<<<<");
-  */
-  selectArticlesQueryString +=
-    " GROUP BY articles.article_id ORDER BY articles.created_at";
-
-
-
-
-    console.log(articleQuery.order + "order specified")
-
-
-  //order
-  if (articleQuery.order) {
-    queryValues.push(articleQuery.order);
-    selectArticlesQueryString += ` $1`;
-  } else {
-    // default to DESC
-    selectArticlesQueryString += ` DESC`;
+  // default currentOrder to 'DESC' if no order given
+  const currentOrder = order ? order : "DESC";
+  // check if currentOrder is either ASC or DESC, if not return 400 error
+  if (!["ASC", "DESC"].includes(currentOrder)) {
+    return Promise.reject({ status: 400, msg: "invalid order query" });
   }
 
-  selectArticlesQueryString += ";";
-// watch out for the length and positioning of the values in query string, as they will change depending on how many queries have been pushed !!!!!
-  console.log(queryValues)
-  console.log(selectArticlesQueryString)
+  let selectArticlesQueryString = `
+  SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at,
+  articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count
+  FROM articles articles
+  LEFT JOIN comments comments
+  ON comments.article_id = articles.article_id`;
+
+  // if a topic query was passed, build it into the db query string
+  // if there wasn't a topic specifed, return all topics with no need
+  // for a WHERE clause at all
+  if (topic) {
+    selectArticlesQueryString += ` WHERE articles.topic = '${topic}'`;
+  }
+
+  selectArticlesQueryString += ` GROUP BY articles.article_id ORDER BY articles.created_at ${currentOrder};`;
 
   return db
-    .query(selectArticlesQueryString, queryValues)
+    .query(selectArticlesQueryString)
     .then((results) => {
+      if (results.rowCount === 0) {
+        return Promise.reject({ status: 404, msg: "no articles found" });
+      }
       return results;
     })
     .catch(next);
