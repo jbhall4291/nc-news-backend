@@ -57,7 +57,16 @@ exports.selectArticleById = (article_id, next) => {
     return Promise.reject({ status: 400, msg: "article_id is not a number" });
   }
 
-  const selectArticleByIdQueryString = `SELECT * FROM articles WHERE article_id = $1;`;
+  // const selectArticleByIdQueryString = `SELECT * FROM articles WHERE article_id = $1;`;
+
+  const selectArticleByIdQueryString = `
+        SELECT a.*,  COUNT(C.article_id) AS comment_count
+        FROM articles a 
+        LEFT JOIN comments c 
+        ON c.article_id = a.article_id 
+        WHERE a.article_id = $1 
+        GROUP BY a.article_id;
+        `;
 
   return db
     .query(selectArticleByIdQueryString, [article_id])

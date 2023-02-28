@@ -226,6 +226,26 @@ describe("app.js", () => {
         });
     });
 
+    test("Status 200: returns article 1 with a comment_count property with a value of 11, a total of all comments for article 1", () => {
+      return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then((response) => {
+          const article = response.body.article;
+          expect(article.comment_count).toBe('11');
+        });
+    });
+
+    test("Status 200: returns article 3 with a comment_count property with a value of 2, a total of all comments for article 3", () => {
+      return request(app)
+        .get("/api/articles/3")
+        .expect(200)
+        .then((response) => {
+          const article = response.body.article;
+          expect(article.comment_count).toBe('2');
+        });
+    });
+
     test("Status 400: returns a message with a value of 'article_id is not a number' if article_id is not a number", () => {
       return request(app)
         .get("/api/articles/banana")
@@ -243,6 +263,9 @@ describe("app.js", () => {
           expect(response.body.msg).toBe("article_id not found");
         });
     });
+
+    
+
   });
 
   describe("GET requests on /api/articles/:article_id/comments", () => {
