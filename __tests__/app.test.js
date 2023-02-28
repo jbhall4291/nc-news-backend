@@ -232,7 +232,7 @@ describe("app.js", () => {
         .expect(200)
         .then((response) => {
           const article = response.body.article;
-          expect(article.comment_count).toBe('11');
+          expect(article.comment_count).toBe("11");
         });
     });
 
@@ -242,7 +242,7 @@ describe("app.js", () => {
         .expect(200)
         .then((response) => {
           const article = response.body.article;
-          expect(article.comment_count).toBe('2');
+          expect(article.comment_count).toBe("2");
         });
     });
 
@@ -263,9 +263,6 @@ describe("app.js", () => {
           expect(response.body.msg).toBe("article_id not found");
         });
     });
-
-    
-
   });
 
   describe("GET requests on /api/articles/:article_id/comments", () => {
@@ -665,4 +662,48 @@ describe("app.js", () => {
         });
     });
   });
+
+  describe("DELETE requests on /api/comments/:comment_id", () => {
+    test("Status 204: responds with no content", () => {
+      return request(app)
+        .delete("/api/comments/1")
+        .expect(204)
+        .then((response) => {
+          expect(response.body.msg).toBe(undefined);
+        });
+    });
+
+    test("Status 204: comment_id 1 is deleted from database", () => {
+      return request(app)
+        .delete("/api/comments/1")
+        .expect(204)
+        .then(() => {
+          return db
+            .query("SELECT * FROM comments WHERE comment_id = 1")
+            .then(({ rowCount }) => {
+              expect(rowCount).toBe(0);
+            });
+        });
+    });
+
+    test("Status 404: responds with message 'comment_id not found'", () => {
+      return request(app)
+        .delete("/api/comments/999")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("comment_id not found");
+        });
+    });
+
+    test("Status 400: responds with message 'comment_id is not a number'", () => {
+      return request(app)
+        .delete("/api/comments/bananas")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("comment_id is not a number");
+        });
+    });
+  });
 });
+
+//18 comments

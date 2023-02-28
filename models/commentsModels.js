@@ -74,3 +74,26 @@ exports.insertArticleComment = (article_id, commentToInsert) => {
         });
     });
 };
+
+exports.deleteCommentById = (comment_id) => {
+  if (isNaN(comment_id)) {
+    return Promise.reject({ status: 400, msg: "comment_id is not a number" });
+  }
+
+  const deleteCommentByIdQueryString = `DELETE FROM comments WHERE comment_id = $1;`
+
+  return db
+    .query(deleteCommentByIdQueryString, [comment_id])
+    .then((result) => {
+      if (result.rowCount === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "comment_id not found",
+        });
+      } else {
+        const comments = result.rows;
+        return comments;
+      }
+    });
+
+};
