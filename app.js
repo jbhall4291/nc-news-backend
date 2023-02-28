@@ -9,8 +9,9 @@ const {
 const {
   getArticleComments,
   postArticleComment,
+  deleteComment,
 } = require("./controllers/commentControllers");
-const {getUsers} = require("./controllers/userControllers.js")
+const { getUsers } = require("./controllers/userControllers.js");
 const {
   handle400Statuses,
   handle500Statuses,
@@ -30,7 +31,9 @@ app.get("/api/articles/:article_id/comments", getArticleComments);
 
 app.post("/api/articles/:article_id/comments", postArticleComment);
 
-app.get("/api/users", getUsers)
+app.get("/api/users", getUsers);
+
+app.delete("/api/comments/:comment_id", deleteComment);
 
 app.use((request, response, next) => {
   response.status(404).send({ msg: "invalid endpoint" });
