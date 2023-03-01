@@ -704,6 +704,44 @@ describe("app.js", () => {
         });
     });
   });
-});
 
-//18 comments
+  describe("GET requests on /api", () => {
+    test("Status 200: responds with a JSON describing all available endpoints", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then((response) => {
+          const endpoints = response.body.endpoints;
+          
+          expect(endpoints).toHaveProperty("GET /api");
+          expect(endpoints).toHaveProperty("GET /api/topics");
+          expect(endpoints).toHaveProperty("GET /api/articles");
+          expect(endpoints).toHaveProperty("GET /api/articles/:article_id");
+          expect(endpoints).toHaveProperty("PATCH /api/articles/:article_id");
+          expect(endpoints).toHaveProperty(
+            "GET /api/articles/:article_id/comments"
+          );
+          expect(endpoints).toHaveProperty(
+            "POST /api/articles/:article_id/comments"
+          );
+          expect(endpoints).toHaveProperty("GET /api/users");
+          expect(endpoints).toHaveProperty("DELETE /api/comments/:comment_id");
+        });
+    });
+    test.only("Status 200: each endpoint has 'description', 'queries' & 'exampleResponse' properties", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then((response) => {
+          const endpoints = response.body.endpoints;
+          console.log(endpoints)
+          for (const key in endpoints) {
+            expect(endpoints[key]).toHaveProperty("description");
+            expect(endpoints[key]).toHaveProperty("exampleResponse");
+            expect(endpoints[key]).toHaveProperty("queries");  
+          }
+
+        });
+    });
+  });
+});
