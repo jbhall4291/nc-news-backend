@@ -16,8 +16,11 @@ const {
   handle400Statuses,
   handle500Statuses,
 } = require("./controllers/errorHandlingControllers.js");
+const {getEndpoints} = require('./controllers/endpointControllers')
 
 app.use(express.json());
+
+app.get("/api", getEndpoints)
 
 app.get("/api/topics", getAllTopics);
 
