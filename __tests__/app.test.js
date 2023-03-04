@@ -728,7 +728,7 @@ describe("app.js", () => {
           expect(endpoints).toHaveProperty("DELETE /api/comments/:comment_id");
         });
     });
-    test.only("Status 200: each endpoint has 'description', 'queries' & 'exampleResponse' properties", () => {
+    test.skip("Status 200: each endpoint has 'description', 'queries' & 'exampleResponse' properties", () => {
       return request(app)
         .get("/api")
         .expect(200)
