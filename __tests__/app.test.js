@@ -147,7 +147,7 @@ describe("app.js", () => {
         });
     });
 
-    test("Status 200: articles array should be sorted by date in descending order", () => {
+    test("Status 200: articles array should be ordered by date in descending order", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
@@ -311,7 +311,7 @@ describe("app.js", () => {
         });
     });
 
-    test("Status 200: comments array should be sorted by date in descending order i.e. most recent first", () => {
+    test("Status 200: comments array should be ordered by date in descending order i.e. most recent first", () => {
       return request(app)
         .get("/api/articles/1/comments")
         .expect(200)
@@ -601,7 +601,7 @@ describe("app.js", () => {
         });
     });
 
-    test("Status 200: returns all 11 articles with the topic 'mitch', sorted by descending date by default", () => {
+    test("Status 200: returns all 11 articles with the topic 'mitch', ordered in descending date by default", () => {
       return request(app)
         .get("/api/articles?topic=mitch")
         .expect(200)
@@ -613,18 +613,19 @@ describe("app.js", () => {
         });
     });
 
-    test("Status 200: returns articles with the topic 'mitch', specifically sorted by descending date", () => {
+    test("Status 200: returns articles with the topic 'mitch', specifically ordered by descending date", () => {
       return request(app)
         .get("/api/articles?topic=mitch&order=desc")
         .expect(200)
         .then((response) => {
+          
           expect(response.body.articles).toBeSortedBy("created_at", {
             descending: true,
           });
         });
     });
 
-    test("Status 200: returns articles with the topic 'mitch', specifically sorted by ascending date", () => {
+    test("Status 200: returns articles with the topic 'mitch', specifically ordered by ascending date", () => {
       return request(app)
         .get("/api/articles?topic=mitch&order=asc")
         .expect(200)
