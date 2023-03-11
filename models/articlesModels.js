@@ -9,7 +9,7 @@ exports.selectArticles = (topic, sort_by, order, next) => {
     "title",
     "topic",
     "author",
-    "body",
+    "comment_count",
     "created_at",
     "votes",
     "article_img_url",
