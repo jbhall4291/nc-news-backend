@@ -39,7 +39,7 @@ exports.selectArticles = (topic, sort_by, order, next) => {
     selectArticlesQueryString += ` WHERE articles.topic = '${topic}'`;
   }
 
-  selectArticlesQueryString += ` GROUP BY articles.article_id ORDER BY articles.created_at ${currentOrder};`;
+  selectArticlesQueryString += ` GROUP BY articles.article_id ORDER BY articles.${sortOption} ${currentOrder};`;
 
   return db
     .query(selectArticlesQueryString)

@@ -601,7 +601,7 @@ describe("app.js", () => {
         });
     });
 
-    test("Status 200: returns all 11 articles with the topic 'mitch', ordered in descending date by default", () => {
+    test("Status 200: returns all 11 articles with the topic 'mitch', with sort defaulting to 'date' and order defaulting to 'descending'", () => {
       return request(app)
         .get("/api/articles?topic=mitch")
         .expect(200)
@@ -613,19 +613,18 @@ describe("app.js", () => {
         });
     });
 
-    test("Status 200: returns articles with the topic 'mitch', specifically ordered by descending date", () => {
+    test("Status 200: returns articles with the topic 'mitch', with sort defaulting to 'date' and order specified (rather than defaulting) to 'descending'", () => {
       return request(app)
         .get("/api/articles?topic=mitch&order=desc")
         .expect(200)
         .then((response) => {
-          
           expect(response.body.articles).toBeSortedBy("created_at", {
             descending: true,
           });
         });
     });
 
-    test("Status 200: returns articles with the topic 'mitch', specifically ordered by ascending date", () => {
+    test("Status 200: returns articles with the topic 'mitch', with sort defaulting to 'date' and order specified as 'ascending'", () => {
       return request(app)
         .get("/api/articles?topic=mitch&order=asc")
         .expect(200)
@@ -633,6 +632,40 @@ describe("app.js", () => {
           expect(response.body.articles).toBeSortedBy("created_at", {
             descending: false,
           });
+        });
+    });
+
+    test("Status 200: returns all articles sorted by 'topic', with order defaulting to 'descending'", () => {
+      return request(app)
+        .get("/api/articles?sort_by=topic")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toBeSortedBy("topic", {
+            descending: true,
+          });
+        });
+    });
+
+    
+
+    test("Status 200: returns all articles sorted by 'topic', with order specified to 'ascending'", () => {
+      return request(app)
+        .get("/api/articles?sort_by=topic&order=asc")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toBeSortedBy("topic", {
+            descending: false,
+          });
+        });
+    });
+
+
+    test("Status 400: responds with message 'invalid sort query'", () => {
+      return request(app)
+        .get("/api/articles?sort_by=banana")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("invalid sort query");
         });
     });
 
@@ -713,7 +746,7 @@ describe("app.js", () => {
         .expect(200)
         .then((response) => {
           const endpoints = response.body.endpoints;
-          
+
           expect(endpoints).toHaveProperty("GET /api");
           expect(endpoints).toHaveProperty("GET /api/topics");
           expect(endpoints).toHaveProperty("GET /api/articles");
@@ -735,13 +768,12 @@ describe("app.js", () => {
         .expect(200)
         .then((response) => {
           const endpoints = response.body.endpoints;
-          console.log(endpoints)
+          console.log(endpoints);
           for (const key in endpoints) {
             expect(endpoints[key]).toHaveProperty("description");
             expect(endpoints[key]).toHaveProperty("exampleResponse");
-            expect(endpoints[key]).toHaveProperty("queries");  
+            expect(endpoints[key]).toHaveProperty("queries");
           }
-
         });
     });
   });
