@@ -615,7 +615,7 @@ describe("app.js", () => {
 
     test("Status 200: returns articles with the topic 'mitch', specifically sorted by descending date", () => {
       return request(app)
-        .get("/api/articles?topic=mitch&order=DESC")
+        .get("/api/articles?topic=mitch&order=desc")
         .expect(200)
         .then((response) => {
           expect(response.body.articles).toBeSortedBy("created_at", {
@@ -626,7 +626,7 @@ describe("app.js", () => {
 
     test("Status 200: returns articles with the topic 'mitch', specifically sorted by ascending date", () => {
       return request(app)
-        .get("/api/articles?topic=mitch&order=ASC")
+        .get("/api/articles?topic=mitch&order=asc")
         .expect(200)
         .then((response) => {
           expect(response.body.articles).toBeSortedBy("created_at", {
@@ -646,7 +646,7 @@ describe("app.js", () => {
 
     test("Status 400: responds with message 'invalid sort query'", () => {
       return request(app)
-        .get("/api/articles?topic=mitch&order=ASC&sort_by=bananas")
+        .get("/api/articles?topic=mitch&order=asc&sort_by=bananas")
         .expect(400)
         .then((response) => {
           expect(response.body.msg).toBe("invalid sort query");
@@ -728,7 +728,7 @@ describe("app.js", () => {
           expect(endpoints).toHaveProperty("DELETE /api/comments/:comment_id");
         });
     });
-    test.skip("Status 200: each endpoint has 'description', 'queries' & 'exampleResponse' properties", () => {
+    test("Status 200: each endpoint has 'description', 'queries' & 'exampleResponse' properties", () => {
       return request(app)
         .get("/api")
         .expect(200)

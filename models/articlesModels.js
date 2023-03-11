@@ -18,10 +18,10 @@ exports.selectArticles = (topic, sort_by, order, next) => {
     return Promise.reject({ status: 400, msg: "invalid sort query" });
   }
 
-  // default currentOrder to 'DESC' if no order given
-  const currentOrder = order ? order : "DESC";
-  // check if currentOrder is either ASC or DESC, if not return 400 error
-  if (!["ASC", "DESC"].includes(currentOrder)) {
+  // default currentOrder to 'desc' if no order given
+  const currentOrder = order ? order : "desc";
+  // check if currentOrder is either 'asc' or 'desc', if not return 400 error
+  if (!["asc", "desc"].includes(currentOrder)) {
     return Promise.reject({ status: 400, msg: "invalid order query" });
   }
 
