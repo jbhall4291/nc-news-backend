@@ -33,13 +33,19 @@ exports.selectArticles = (topic, sort_by, order, next) => {
   ON comments.article_id = articles.article_id`;
 
   // if a topic query was passed, build it into the db query string
-  // if there wasn't a topic specifed, return all topics with no need
+  // if there wasn't a topic specified, return all topics with no need
   // for a WHERE clause at all
   if (topic) {
     selectArticlesQueryString += ` WHERE articles.topic = '${topic}'`;
   }
 
+  // special handling for sorting by comment_count as it's an alias rather than a column on articles, so can't use articles.comment_count
+if (sortOption === "comment_count") {
+selectArticlesQueryString += ` GROUP BY articles.article_id ORDER BY comment_count ${currentOrder};`; 
+} else {
   selectArticlesQueryString += ` GROUP BY articles.article_id ORDER BY articles.${sortOption} ${currentOrder};`;
+}
+
 
   return db
     .query(selectArticlesQueryString)
