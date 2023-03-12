@@ -65,8 +65,9 @@ port 9090 of your localhost
    ```
 7. Point your browser at `localhost:9090/api` to see a list of all the endpoints, how to interact with them, and example responses.
 
-8. The app has been fully tested with the use of Jest and the Supertest library. You can run these tests using:
+8. This app has been fully tested with the use of Jest and the Supertest library. To install the necessary dependencies and run the test suite use:
    ```
+   npm install -D jest jest-sorted supertest
    npm test
    ```
 
