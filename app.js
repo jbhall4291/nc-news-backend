@@ -17,7 +17,7 @@ const {
   handle400Statuses,
   handle500Statuses,
 } = require("./controllers/errorHandlingControllers.js");
-const {getEndpoints} = require('./controllers/endpointControllers')
+const {getEndpoints} = require('./controllers/endpointControllers.js')
 
 app.use(cors());
 
