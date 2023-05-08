@@ -56,7 +56,7 @@ Alternatively, to run a local copy please ensure you are running node (minimum v
    .env.development
    ```
 
-   Into each of these files, add the single line *PGDATABASE=<database_name_placeholder>*, replacing the placeholder text with the corresponding database name for each environment. Please see `/db/setup.sql` for what each database should be. Double check that these .env files are in `.gitignored`!
+   Into each of these files, add the single line PGDATABASE=<database_name_placeholder>, replacing the placeholder text with the corresponding database name for each environment. Please see `/db/setup.sql` for what each database should be. Double check that these .env files are in `.gitignore`!
 
 6. Start the express server and the app will start listening on 
 port 9090 of your localhost
