@@ -1,8 +1,10 @@
-# 📰 Johnny's NC-NEWS
+# 🐝 NewsBuzz
 
-## Welcome to NC-NEWS!
+## Welcome to NewBuzz!
 
-NC-NEWS is a news aggregation app in the style of Reddit, allowing users to view, vote and comment on articles... and more!
+NewsBuzz is a social-news aggregation app in the style of Reddit, allowing users to view, vote and comment on articles... and more!
+
+You can [watch a short video of me demonstrating the app here](link pending), otherwise read on!
 
 This project was built as part of the amazing [Northcoders Full-Stack Software Developer Bootcamp](https://northcoders.com/) with the aim of demonstrating the backend skills I have learnt so far including:
 
@@ -20,11 +22,9 @@ This project was built as part of the amazing [Northcoders Full-Stack Software D
 * Upvote or downvote an article
 * View all users
 
-## Using NC-NEWS
+## Using NewsBuzz
 
-A live version of this API can be found here:
-
-https://backend-project-nc-news-49l4.onrender.com/
+You can interact with a [live version of this API found here](https://backend-project-nc-news-49l4.onrender.com/).
 
 Please bear in mind this is hosted on a free tier of Render so may take a few seconds to start.
 
@@ -32,12 +32,12 @@ Alternatively, to run a local copy please ensure you are running node (minimum v
 
 1. Clone this repository:
    ```
-   git clone https://github.com/jbhall4291/backend-nc-news
+   git clone https://github.com/jbhall4291/newsbuzz-backend
    ```
 
 2. Change into this repos directory:
    ```
-   cd backend-nc-news
+   cd newsbuzz-backend
    ```
 
 3. Install dependencies
