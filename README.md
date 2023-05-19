@@ -4,7 +4,7 @@
 
 NewsBuzz is a social-news aggregation app in the style of Reddit, allowing users to view, vote and comment on articles... and more!
 
-You can [watch a short video of me demonstrating the app here](link pending), and the corresponding frontend for this project can [be found here](https://github.com/jbhall4291/newsbuzz). If you're interested in just the backend, then read on...
+You can [watch a short video of me demonstrating the app here](https://www.youtube.com/watch?v=CnuN6rD8j8w), and the corresponding [frontend for this project can be found here](https://github.com/jbhall4291/newsbuzz). If you're interested in just the backend, then read on...
 
 This project was built as part of the amazing [Northcoders Full-Stack Software Developer Bootcamp](https://northcoders.com/) with the aim of demonstrating the backend skills I have learnt so far including:
 
