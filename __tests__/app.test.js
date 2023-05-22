@@ -159,6 +159,107 @@ describe("app.js", () => {
     });
   });
 
+  describe("POST requests on /api/articles", () => {
+    test("Status 201: returns the inserted article with expected values inc. defaults", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "icellusedkars",
+          title: "test article here, read all about it!",
+          body: "So I thought I'd write this article for a test...",
+          topic: "mitch",
+        })
+        .expect(201)
+        .then((response) => {
+          const postedArticle = response.body.postedArticle;
+          expect(postedArticle.author).toBe("icellusedkars");
+          expect(postedArticle.title).toBe(
+            "test article here, read all about it!"
+          );
+          expect(postedArticle.body).toBe(
+            "So I thought I'd write this article for a test..."
+          );
+          expect(postedArticle.topic).toBe("mitch");
+          expect(postedArticle.article_id).toBe(13);
+          expect(postedArticle.votes).toBe(0);
+          expect(postedArticle.comment_count).toBe("0");
+          // expect(postedArticle.created_at).toBe(0);
+          // console.log(Date.now())
+        });
+    });
+
+    test("Status 404: returns a message 'username does not exist' if the author is not in 'users' table", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "alanPartridge",
+          title: "test article here, read all about it!",
+          body: "So I thought I'd write this article for a test...",
+          topic: "mitch",
+        })
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("username does not exist");
+        });
+    });
+
+    test("Status 400: returns a message 'article is missing author' if the author is missing", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          title: "test article here, read all about it!",
+          body: "So I thought I'd write this article for a test...",
+          topic: "mitch",
+        })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("article is missing author");
+        });
+    });
+
+    test("Status 400: returns a message 'article is missing title' if the title is missing", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "alanPartridge",
+          body: "So I thought I'd write this article for a test...",
+          topic: "mitch",
+        })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("article is missing title");
+        });
+    });
+
+    test("Status 400: returns a message 'article is missing body' if the body is missing", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "alanPartridge",
+          title: "test article here, read all about it!",
+          topic: "mitch",
+        })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("article is missing body");
+        });
+    });
+
+    test("Status 400: returns a message 'article is missing topic' if the topic is missing", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "alanPartridge",
+          title: "test article here, read all about it!",
+          body: "So I thought I'd write this article for a test...",
+        })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("article is missing topic");
+        });
+    });
+  });
+
   describe("GET requests on /api/articles/:article_id", () => {
     test("Status 200: returns a single article object on a key of 'article'", () => {
       return request(app)
@@ -646,8 +747,6 @@ describe("app.js", () => {
         });
     });
 
-    
-
     test("Status 200: returns all articles sorted by 'topic', with order specified to 'ascending'", () => {
       return request(app)
         .get("/api/articles?sort_by=topic&order=asc")
@@ -658,7 +757,6 @@ describe("app.js", () => {
           });
         });
     });
-
 
     test("Status 400: responds with message 'invalid sort query'", () => {
       return request(app)
@@ -768,7 +866,6 @@ describe("app.js", () => {
         .expect(200)
         .then((response) => {
           const endpoints = response.body.endpoints;
-          console.log(endpoints);
           for (const key in endpoints) {
             expect(endpoints[key]).toHaveProperty("description");
             expect(endpoints[key]).toHaveProperty("exampleResponse");
