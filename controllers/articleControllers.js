@@ -2,10 +2,11 @@ const {
   selectArticles,
   selectArticleById,
   updateArticle,
+  insertArticle,
 } = require("../models/articlesModels.js");
 
 exports.getArticles = (request, response, next) => {
-  const {topic, sort_by, order} = request.query;
+  const { topic, sort_by, order } = request.query;
 
   selectArticles(topic, sort_by, order)
     .then((results) => {
@@ -34,6 +35,17 @@ exports.patchArticle = (request, response, next) => {
   ])
     .then(([promise1Result, promise2Result]) => {
       response.status(202).send({ updatedArticle: promise2Result });
+    })
+    .catch(next);
+};
+
+exports.postArticle = (request, response, next) => {
+  const articleData = request.body;
+
+  insertArticle(articleData)
+    .then((insertedArticle) => selectArticleById(insertedArticle.article_id))
+    .then((result) => {
+      response.status(201).send({ postedArticle: result });
     })
     .catch(next);
 };
