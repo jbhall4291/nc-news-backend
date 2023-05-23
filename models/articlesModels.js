@@ -40,12 +40,11 @@ exports.selectArticles = (topic, sort_by, order, next) => {
   }
 
   // special handling for sorting by comment_count as it's an alias rather than a column on articles, so can't use articles.comment_count
-if (sortOption === "comment_count") {
-selectArticlesQueryString += ` GROUP BY articles.article_id ORDER BY comment_count ${currentOrder};`; 
-} else {
-  selectArticlesQueryString += ` GROUP BY articles.article_id ORDER BY articles.${sortOption} ${currentOrder};`;
-}
-
+  if (sortOption === "comment_count") {
+    selectArticlesQueryString += ` GROUP BY articles.article_id ORDER BY comment_count ${currentOrder};`;
+  } else {
+    selectArticlesQueryString += ` GROUP BY articles.article_id ORDER BY articles.${sortOption} ${currentOrder};`;
+  }
 
   return db
     .query(selectArticlesQueryString)
@@ -115,4 +114,76 @@ exports.updateArticle = (article_id, patchData, next) => {
       }
     })
     .catch(next);
+};
+
+exports.insertArticle = (articleData) => {
+  if (!articleData.author) {
+    return Promise.reject({
+      status: 400,
+      msg: "article is missing author",
+    });
+  }
+
+  if (!articleData.title) {
+    return Promise.reject({
+      status: 400,
+      msg: "article is missing title",
+    });
+  }
+
+  if (!articleData.body) {
+    return Promise.reject({
+      status: 400,
+      msg: "article is missing body",
+    });
+  }
+
+  if (!articleData.topic) {
+    return Promise.reject({
+      status: 400,
+      msg: "article is missing topic",
+    });
+  }
+
+// check username is in the users table
+const selectUserQueryString = `SELECT * FROM users WHERE username = $1;`;
+
+
+return db
+.query(selectUserQueryString, [articleData.author])
+.then((result) => {
+  
+  if (result.rowCount === 0) {
+    return Promise.reject({
+      status: 404,
+      msg: "username does not exist",
+    });
+  } else {
+    const user = result.rows;
+    return user;
+  }
+})
+.then(() => {
+  const insertArticleQueryString = `INSERT INTO articles (author, title, body, topic) VALUES ($1, $2, $3, $4) RETURNING *;`;
+
+  return db
+    .query(insertArticleQueryString, [
+      articleData.author,
+      articleData.title,
+      articleData.body,
+      articleData.topic,
+    ])
+    .then((result) => {
+      if (result.rows.length === 0) {
+        return Promise.reject({
+          status: 400,
+          msg: "not found",
+        });
+      }
+
+      return result.rows[0];
+    });
+});
+
+
 };
