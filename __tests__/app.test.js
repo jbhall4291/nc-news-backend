@@ -194,7 +194,7 @@ describe("app.js", () => {
         });
     });
 
-    test.only("Status 201: returns the inserted article when provided with a custom image url", () => {
+    test("Status 201: returns the inserted article when provided with a custom image url", () => {
       return request(app)
         .post("/api/articles")
         .send({
