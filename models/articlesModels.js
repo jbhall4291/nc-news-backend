@@ -164,7 +164,7 @@ return db
   }
 })
 .then(() => {
-  const insertArticleQueryString = `INSERT INTO articles (author, title, body, topic) VALUES ($1, $2, $3, $4) RETURNING *;`;
+  const insertArticleQueryString = `INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *;`;
 
   return db
     .query(insertArticleQueryString, [
@@ -172,6 +172,8 @@ return db
       articleData.title,
       articleData.body,
       articleData.topic,
+      articleData.article_img_url || 'https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700',
+
     ])
     .then((result) => {
       if (result.rows.length === 0) {

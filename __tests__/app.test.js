@@ -160,7 +160,7 @@ describe("app.js", () => {
   });
 
   describe("POST requests on /api/articles", () => {
-    test.only("Status 201: returns the inserted article with expected values inc. defaults", () => {
+    test("Status 201: returns the inserted article with expected values inc. defaults", () => {
       return request(app)
         .post("/api/articles")
         .send({
@@ -193,6 +193,40 @@ describe("app.js", () => {
           // console.log(Date.now())
         });
     });
+
+    test.only("Status 201: returns the inserted article when provided with a custom image url", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "icellusedkars",
+          title: "test article here, read all about it!",
+          body: "So I thought I'd write this article for a test...",
+          topic: "mitch",
+          article_img_url: "https://pngimg.com/uploads/simpsons/simpsons_PNG3.png",
+        })
+        .expect(201)
+        .then((response) => {
+          const postedArticle = response.body.postedArticle;
+          expect(postedArticle.author).toBe("icellusedkars");
+          expect(postedArticle.title).toBe(
+            "test article here, read all about it!"
+          );
+          expect(postedArticle.body).toBe(
+            "So I thought I'd write this article for a test..."
+          );
+          expect(postedArticle.topic).toBe("mitch");
+          expect(postedArticle.article_id).toBe(13);
+          expect(postedArticle.votes).toBe(0);
+          expect(postedArticle.comment_count).toBe("0");
+          console.log(postedArticle);
+          expect(postedArticle.article_img_url).toBe(
+            "https://pngimg.com/uploads/simpsons/simpsons_PNG3.png"
+          );
+         
+        });
+    });
+
+
 
     test("Status 404: returns a message 'username does not exist' if the author is not in 'users' table", () => {
       return request(app)
