@@ -322,23 +322,21 @@ describe("app.js", () => {
         });
     });
 
+    test.only("Status 200: returns an empty comments array for article_id 2", () => {
+      return request(app)
+        .get("/api/articles/2/comments")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.comments.length).toBe(0);
+        });
+    });
+
     test("Status 404: returns a message 'article_id not found' if article_id doesn't exist", () => {
       return request(app)
         .get("/api/articles/999999/comments")
         .expect(404)
         .then((response) => {
           expect(response.body.msg).toBe("article_id not found");
-        });
-    });
-
-    test("Status 404: returns a message with 'specified article_id has no comments' for article_id 2", () => {
-      return request(app)
-        .get("/api/articles/2/comments")
-        .expect(404)
-        .then((response) => {
-          expect(response.body.msg).toBe(
-            "specified article_id has no comments"
-          );
         });
     });
   });

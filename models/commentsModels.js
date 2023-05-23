@@ -10,15 +10,8 @@ exports.selectArticleComments = (article_id) => {
   return db
     .query(selectArticleCommentsByIdQueryString, [article_id])
     .then((result) => {
-      if (result.rowCount === 0) {
-        return Promise.reject({
-          status: 404,
-          msg: "specified article_id has no comments",
-        });
-      } else {
-        const comments = result.rows;
-        return comments;
-      }
+      const comments = result.rows;
+      return comments;
     });
 };
 
@@ -80,20 +73,17 @@ exports.deleteCommentById = (comment_id) => {
     return Promise.reject({ status: 400, msg: "comment_id is not a number" });
   }
 
-  const deleteCommentByIdQueryString = `DELETE FROM comments WHERE comment_id = $1;`
+  const deleteCommentByIdQueryString = `DELETE FROM comments WHERE comment_id = $1;`;
 
-  return db
-    .query(deleteCommentByIdQueryString, [comment_id])
-    .then((result) => {
-      if (result.rowCount === 0) {
-        return Promise.reject({
-          status: 404,
-          msg: "comment_id not found",
-        });
-      } else {
-        const comments = result.rows;
-        return comments;
-      }
-    });
-
+  return db.query(deleteCommentByIdQueryString, [comment_id]).then((result) => {
+    if (result.rowCount === 0) {
+      return Promise.reject({
+        status: 404,
+        msg: "comment_id not found",
+      });
+    } else {
+      const comments = result.rows;
+      return comments;
+    }
+  });
 };
