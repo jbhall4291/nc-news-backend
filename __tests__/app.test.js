@@ -160,7 +160,7 @@ describe("app.js", () => {
   });
 
   describe("POST requests on /api/articles", () => {
-    test("Status 201: returns the inserted article with expected values inc. defaults", () => {
+    test.only("Status 201: returns the inserted article with expected values inc. defaults", () => {
       return request(app)
         .post("/api/articles")
         .send({
@@ -168,6 +168,8 @@ describe("app.js", () => {
           title: "test article here, read all about it!",
           body: "So I thought I'd write this article for a test...",
           topic: "mitch",
+          // article_img_url:
+          //   "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
         })
         .expect(201)
         .then((response) => {
@@ -183,6 +185,10 @@ describe("app.js", () => {
           expect(postedArticle.article_id).toBe(13);
           expect(postedArticle.votes).toBe(0);
           expect(postedArticle.comment_count).toBe("0");
+          console.log(postedArticle);
+          expect(postedArticle.article_img_url).toBe(
+            "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700"
+          );
           // expect(postedArticle.created_at).toBe(0);
           // console.log(Date.now())
         });
