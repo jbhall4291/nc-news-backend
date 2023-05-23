@@ -322,7 +322,7 @@ describe("app.js", () => {
         });
     });
 
-    test.only("Status 200: returns an empty comments array for article_id 2", () => {
+    test("Status 200: returns an empty comments array for article_id 2", () => {
       return request(app)
         .get("/api/articles/2/comments")
         .expect(200)
@@ -766,7 +766,6 @@ describe("app.js", () => {
         .expect(200)
         .then((response) => {
           const endpoints = response.body.endpoints;
-          console.log(endpoints);
           for (const key in endpoints) {
             expect(endpoints[key]).toHaveProperty("description");
             expect(endpoints[key]).toHaveProperty("exampleResponse");
