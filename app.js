@@ -6,7 +6,8 @@ const {
   getArticles,
   getArticle,
   patchArticle,
-  postArticle
+  postArticle,
+  deleteArticle
 } = require("./controllers/articleControllers.js");
 const {
   getArticleComments,
@@ -43,6 +44,8 @@ app.get("/api/users", getUsers);
 app.delete("/api/comments/:comment_id", deleteComment);
 
 app.post("/api/articles", postArticle);
+
+app.delete("/api/articles/:article_id", deleteArticle);
 
 app.use((request, response, next) => {
   response.status(404).send({ msg: "invalid endpoint" });

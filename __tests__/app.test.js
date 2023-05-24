@@ -185,7 +185,7 @@ describe("app.js", () => {
           expect(postedArticle.article_id).toBe(13);
           expect(postedArticle.votes).toBe(0);
           expect(postedArticle.comment_count).toBe("0");
-          console.log(postedArticle);
+
           expect(postedArticle.article_img_url).toBe(
             "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700"
           );
@@ -202,7 +202,8 @@ describe("app.js", () => {
           title: "test article here, read all about it!",
           body: "So I thought I'd write this article for a test...",
           topic: "mitch",
-          article_img_url: "https://pngimg.com/uploads/simpsons/simpsons_PNG3.png",
+          article_img_url:
+            "https://pngimg.com/uploads/simpsons/simpsons_PNG3.png",
         })
         .expect(201)
         .then((response) => {
@@ -218,15 +219,12 @@ describe("app.js", () => {
           expect(postedArticle.article_id).toBe(13);
           expect(postedArticle.votes).toBe(0);
           expect(postedArticle.comment_count).toBe("0");
-          console.log(postedArticle);
+
           expect(postedArticle.article_img_url).toBe(
             "https://pngimg.com/uploads/simpsons/simpsons_PNG3.png"
           );
-         
         });
     });
-
-
 
     test("Status 404: returns a message 'username does not exist' if the author is not in 'users' table", () => {
       return request(app)
@@ -909,6 +907,48 @@ describe("app.js", () => {
             expect(endpoints[key]).toHaveProperty("exampleResponse");
             expect(endpoints[key]).toHaveProperty("queries");
           }
+        });
+    });
+  });
+
+  describe("DELETE requests on /api/articles", () => {
+    test("Status 204: responds with no content", () => {
+      return request(app)
+        .delete("/api/articles/1")
+        .expect(204)
+        .then((response) => {
+          expect(response.body.msg).toBe(undefined);
+        });
+    });
+
+    test("Status 204: article 1 is deleted from database", () => {
+      return request(app)
+        .delete("/api/articles/1")
+        .expect(204)
+        .then(() => {
+          return db
+            .query("SELECT * FROM articles WHERE article_id = 1")
+            .then(({ rowCount }) => {
+              expect(rowCount).toBe(0);
+            });
+        });
+    });
+
+    test("Status 404: responds with message 'article_id not found'", () => {
+      return request(app)
+        .delete("/api/articles/999")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("article_id not found");
+        });
+    });
+
+    test("Status 400: responds with message 'article_id is not a number'", () => {
+      return request(app)
+        .delete("/api/articles/bananas")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("article_id is not a number");
         });
     });
   });
