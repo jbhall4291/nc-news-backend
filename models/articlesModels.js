@@ -145,47 +145,72 @@ exports.insertArticle = (articleData) => {
     });
   }
 
-// check username is in the users table
-const selectUserQueryString = `SELECT * FROM users WHERE username = $1;`;
-
-
-return db
-.query(selectUserQueryString, [articleData.author])
-.then((result) => {
-  
-  if (result.rowCount === 0) {
-    return Promise.reject({
-      status: 404,
-      msg: "username does not exist",
-    });
-  } else {
-    const user = result.rows;
-    return user;
-  }
-})
-.then(() => {
-  const insertArticleQueryString = `INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *;`;
+  // check username is in the users table
+  const selectUserQueryString = `SELECT * FROM users WHERE username = $1;`;
 
   return db
-    .query(insertArticleQueryString, [
-      articleData.author,
-      articleData.title,
-      articleData.body,
-      articleData.topic,
-      articleData.article_img_url || 'https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700',
-
-    ])
+    .query(selectUserQueryString, [articleData.author])
     .then((result) => {
-      if (result.rows.length === 0) {
+      if (result.rowCount === 0) {
         return Promise.reject({
-          status: 400,
-          msg: "not found",
+          status: 404,
+          msg: "username does not exist",
         });
+      } else {
+        const user = result.rows;
+        return user;
       }
+    })
+    .then(() => {
+      const insertArticleQueryString = `INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *;`;
 
-      return result.rows[0];
+      return db
+        .query(insertArticleQueryString, [
+          articleData.author,
+          articleData.title,
+          articleData.body,
+          articleData.topic,
+          articleData.article_img_url ||
+            "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+        ])
+        .then((result) => {
+          if (result.rows.length === 0) {
+            return Promise.reject({
+              status: 400,
+              msg: "not found",
+            });
+          }
+
+          return result.rows[0];
+        });
     });
-});
+};
 
+exports.deleteArticleById = (article_id) => {
+  if (isNaN(article_id)) {
+    return Promise.reject({ status: 400, msg: "article_id is not a number" });
+  }
 
+  //remove any comments associated with that article
+  const deleteArticlesComments = `DELETE FROM comments WHERE article_id = $1;`;
+  return db.query(deleteArticlesComments, [article_id]).then(() => {
+    //delete the article itself
+    const deleteArticleByIdQueryString = `DELETE FROM articles WHERE article_id = $1;`;
+
+    console.log(deleteArticleByIdQueryString);
+
+    return db
+      .query(deleteArticleByIdQueryString, [article_id])
+      .then((result) => {
+        if (result.rowCount === 0) {
+          return Promise.reject({
+            status: 404,
+            msg: "article_id not found",
+          });
+        } else {
+          const article = result.rows;
+          return article;
+        }
+      });
+  });
 };
