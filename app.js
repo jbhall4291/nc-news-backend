@@ -1,13 +1,16 @@
 const cors = require("cors");
 const express = require("express");
 const app = express();
-const { getAllTopics } = require("./controllers/topicControllers.js");
+const {
+  getAllTopics,
+  postTopic,
+} = require("./controllers/topicControllers.js");
 const {
   getArticles,
   getArticle,
   patchArticle,
   postArticle,
-  deleteArticle
+  deleteArticle,
 } = require("./controllers/articleControllers.js");
 const {
   getArticleComments,
@@ -46,6 +49,8 @@ app.delete("/api/comments/:comment_id", deleteComment);
 app.post("/api/articles", postArticle);
 
 app.delete("/api/articles/:article_id", deleteArticle);
+
+app.post("/api/topics", postTopic);
 
 app.use((request, response, next) => {
   response.status(404).send({ msg: "invalid endpoint" });
