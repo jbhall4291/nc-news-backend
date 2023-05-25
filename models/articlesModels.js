@@ -197,8 +197,6 @@ exports.deleteArticleById = (article_id) => {
     //delete the article itself
     const deleteArticleByIdQueryString = `DELETE FROM articles WHERE article_id = $1;`;
 
-    console.log(deleteArticleByIdQueryString);
-
     return db
       .query(deleteArticleByIdQueryString, [article_id])
       .then((result) => {

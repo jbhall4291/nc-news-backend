@@ -952,4 +952,71 @@ describe("app.js", () => {
         });
     });
   });
+
+  describe("POST requests on /api/topics", () => {
+    test("Status 201: returns the inserted topic", () => {
+      return request(app)
+        .post("/api/topics")
+        .send({
+          slug: "partridge",
+          description: "A-ha! Guess who's back in the big-time?",
+        })
+        .expect(201)
+        .then((response) => {
+          expect(response.body.topicInserted.slug).toBe("partridge");
+          expect(response.body.topicInserted.description).toBe(
+            "A-ha! Guess who's back in the big-time?"
+          );
+        });
+    });
+
+    test("Status 201: returns the inserted topic, with 'slug' in lowercase", () => {
+      return request(app)
+        .post("/api/topics")
+        .send({
+          slug: "PARTRIDGE",
+          description: "A-ha! Guess who's back in the big-time?",
+        })
+        .expect(201)
+        .then((response) => {
+          expect(response.body.topicInserted.slug).toBe("partridge");
+          expect(response.body.topicInserted.description).toBe(
+            "A-ha! Guess who's back in the big-time?"
+          );
+        });
+    });
+
+    test("Status 400: returns an error if post request is missing slug", () => {
+      return request(app)
+        .post("/api/topics")
+        .send({ description: "A-ha! Guess who's back in the bigtime?" })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("topic is missing slug");
+        });
+    });
+
+    test("Status 400: returns an error if post request is missing description", () => {
+      return request(app)
+        .post("/api/topics")
+        .send({ slug: "partridge" })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("topic is missing description");
+        });
+    });
+
+    test("Status 400: returns an error if a topic with the same slug already exists in 'topics' table", () => {
+      return request(app)
+        .post("/api/topics")
+        .send({
+          slug: "paper",
+          description: "what books are made of again?",
+        })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("topic already exists");
+        });
+    });
+  });
 });
