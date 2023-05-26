@@ -934,6 +934,43 @@ describe("app.js", () => {
         });
     });
 
+   
+    test("Status 204: article 5 is deleted from database; the associated topic now has NO articles so should be deleted too", () => {
+      return request(app)
+        .delete("/api/articles/5")
+        .expect(204)
+        .then(() => {
+          return db.query("SELECT * FROM articles WHERE article_id = 5");
+        })
+        .then(({ rowCount }) => {
+          expect(rowCount).toBe(0);
+        })
+        .then(() => {
+          return db.query("SELECT * FROM topics WHERE slug = 'cats'");
+        })
+        .then(({ rowCount }) => {
+          expect(rowCount).toBe(0);
+        });
+    });
+
+    test("Status 204: article 1 is deleted from database; the associated topic still has articles so should be kept", () => {
+      return request(app)
+        .delete("/api/articles/1")
+        .expect(204)
+        .then(() => {
+          return db.query("SELECT * FROM articles WHERE article_id = 1");
+        })
+        .then(({ rowCount }) => {
+          expect(rowCount).toBe(0);
+        })
+        .then(() => {
+          return db.query("SELECT * FROM topics WHERE slug = 'mitch'");
+        })
+        .then(({ rowCount }) => {
+          expect(rowCount).toBe(1);
+        });
+    });
+
     test("Status 404: responds with message 'article_id not found'", () => {
       return request(app)
         .delete("/api/articles/999")
