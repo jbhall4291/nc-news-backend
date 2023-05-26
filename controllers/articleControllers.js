@@ -51,6 +51,8 @@ exports.postArticle = (request, response, next) => {
     .catch(next);
 };
 
+//check if the article to delete was the last with that topic,
+//in which case delete that topic
 exports.deleteArticle = (request, response, next) => {
   const { article_id } = request.params;
 
