@@ -934,23 +934,22 @@ describe("app.js", () => {
         });
     });
 
-    test.only("Status 204: article 5 is deleted from database; the associated topic now has NO articles so should be deleted too", () => {
+   
+    test("Status 204: article 5 is deleted from database; the associated topic now has NO articles so should be deleted too", () => {
       return request(app)
         .delete("/api/articles/5")
         .expect(204)
         .then(() => {
-          return db
-            .query("SELECT * FROM articles WHERE article_id = 5")
-            .then(({ rowCount }) => {
-              expect(rowCount).toBe(0);
-            })
-            .then(() => {
-              return db
-                .query("SELECT * FROM topics WHERE slug = 'cats'")
-                .then(({ rowCount }) => {
-                  expect(rowCount).toBe(0);
-                });
-            });
+          return db.query("SELECT * FROM articles WHERE article_id = 5");
+        })
+        .then(({ rowCount }) => {
+          expect(rowCount).toBe(0);
+        })
+        .then(() => {
+          return db.query("SELECT * FROM topics WHERE slug = 'cats'");
+        })
+        .then(({ rowCount }) => {
+          expect(rowCount).toBe(0);
         });
     });
 
@@ -959,11 +958,16 @@ describe("app.js", () => {
         .delete("/api/articles/1")
         .expect(204)
         .then(() => {
-          return db
-            .query("SELECT * FROM articles WHERE article_id = 1")
-            .then(({ rowCount }) => {
-              expect(rowCount).toBe(0);
-            });
+          return db.query("SELECT * FROM articles WHERE article_id = 1");
+        })
+        .then(({ rowCount }) => {
+          expect(rowCount).toBe(0);
+        })
+        .then(() => {
+          return db.query("SELECT * FROM topics WHERE slug = 'mitch'");
+        })
+        .then(({ rowCount }) => {
+          expect(rowCount).toBe(1);
         });
     });
 

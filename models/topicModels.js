@@ -54,3 +54,19 @@ exports.insertTopic = (topicToInsert) => {
         });
     });
 };
+
+exports.deleteEmptyTopics = () => {
+  return db
+    .query(
+      `DELETE FROM topics
+      WHERE NOT EXISTS (
+        SELECT 1
+        FROM articles
+        WHERE topics.slug = articles.topic
+      );`
+    )
+    .then((result) => {
+      console.log(result.rows);
+      return result;
+    });
+};

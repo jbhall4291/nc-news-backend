@@ -6,6 +6,8 @@ const {
   deleteArticleById,
 } = require("../models/articlesModels.js");
 
+const { deleteEmptyTopics } = require("../models/topicModels.js");
+
 exports.getArticles = (request, response, next) => {
   const { topic, sort_by, order } = request.query;
 
@@ -51,12 +53,10 @@ exports.postArticle = (request, response, next) => {
     .catch(next);
 };
 
-//check if the article to delete was the last with that topic,
-//in which case delete that topic
 exports.deleteArticle = (request, response, next) => {
   const { article_id } = request.params;
-
   deleteArticleById(article_id)
+    .then(() => deleteEmptyTopics())
     .then(() => {
       response.status(204).send();
     })

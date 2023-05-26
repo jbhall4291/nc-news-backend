@@ -191,24 +191,24 @@ exports.deleteArticleById = (article_id) => {
     return Promise.reject({ status: 400, msg: "article_id is not a number" });
   }
 
-  //remove any comments associated with that article
+  // Remove any comments associated with the article
   const deleteArticlesComments = `DELETE FROM comments WHERE article_id = $1;`;
-  return db.query(deleteArticlesComments, [article_id]).then(() => {
-    //delete the article itself
-    const deleteArticleByIdQueryString = `DELETE FROM articles WHERE article_id = $1;`;
-
-    return db
-      .query(deleteArticleByIdQueryString, [article_id])
-      .then((result) => {
-        if (result.rowCount === 0) {
-          return Promise.reject({
-            status: 404,
-            msg: "article_id not found",
-          });
-        } else {
-          const article = result.rows;
-          return article;
-        }
-      });
-  });
+  return db
+    .query(deleteArticlesComments, [article_id])
+    .then(() => {
+      // Delete the article itself
+      const deleteArticleByIdQueryString = `DELETE FROM articles WHERE article_id = $1;`;
+      return db.query(deleteArticleByIdQueryString, [article_id]);
+    })
+    .then((deleteResult) => {
+      if (deleteResult.rowCount === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "article_id not found",
+        });
+      } else {
+        const article = deleteResult.rows;
+        return article;
+      }
+    });
 };
